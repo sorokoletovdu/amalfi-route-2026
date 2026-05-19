@@ -4,21 +4,21 @@ import { Font } from '@react-pdf/renderer';
 const fontsDir = path.resolve(import.meta.dirname ?? __dirname, '../../public/fonts');
 
 export function registerFonts(): void {
+  const openSansUpright = path.resolve(fontsDir, 'OpenSans.ttf');
+  const openSansItalic  = path.resolve(fontsDir, 'OpenSans-Italic.ttf');
   Font.register({
-    family: 'Inter',
+    family: 'Open Sans',
     fonts: [
-      { src: path.resolve(fontsDir, 'Inter-Regular.ttf'),   fontWeight: 400 },
-      { src: path.resolve(fontsDir, 'Inter-Medium.ttf'),    fontWeight: 500 },
-      { src: path.resolve(fontsDir, 'Inter-SemiBold.ttf'),  fontWeight: 600 },
-      { src: path.resolve(fontsDir, 'Inter-Bold.ttf'),      fontWeight: 700 },
+      { src: openSansUpright, fontWeight: 400 },
+      { src: openSansUpright, fontWeight: 500 },
+      { src: openSansUpright, fontWeight: 600 },
+      { src: openSansUpright, fontWeight: 700 },
+      { src: openSansItalic,  fontWeight: 400, fontStyle: 'italic' },
+      { src: openSansItalic,  fontWeight: 500, fontStyle: 'italic' },
+      { src: openSansItalic,  fontWeight: 600, fontStyle: 'italic' },
+      { src: openSansItalic,  fontWeight: 700, fontStyle: 'italic' },
     ],
   });
 
-  Font.register({
-    family: 'Playfair',
-    fonts: [
-      { src: path.resolve(fontsDir, 'PlayfairDisplay-Regular.ttf'), fontWeight: 400 },
-      { src: path.resolve(fontsDir, 'PlayfairDisplay-Bold.ttf'),    fontWeight: 700 },
-    ],
-  });
+
 }

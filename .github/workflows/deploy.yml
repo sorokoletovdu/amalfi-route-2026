@@ -35,13 +35,11 @@ jobs:
       - name: Download fonts
         run: |
           mkdir -p public/fonts
-          # Inter
-          curl -L "https://github.com/rsms/inter/releases/download/v4.0/Inter-4.0.zip" -o /tmp/inter.zip
-          unzip -j /tmp/inter.zip "InterVariable/InterVariable.ttf" -d public/fonts/ 2>/dev/null || \
-          unzip -j /tmp/inter.zip "*.ttf" -d /tmp/inter-fonts/ && \
-          cp /tmp/inter-fonts/Inter-Regular.ttf public/fonts/ 2>/dev/null || true
-          # Fallback: download individual files from Google Fonts CDN mirror
-          # (replace with your preferred font hosting in production)
+          # Open Sans variable fonts (upright + italic — cover all weights used by the PDF)
+          curl -fsSL "https://raw.githubusercontent.com/google/fonts/main/ofl/opensans/OpenSans%5Bwdth%2Cwght%5D.ttf" \
+            -o public/fonts/OpenSans.ttf
+          curl -fsSL "https://raw.githubusercontent.com/google/fonts/main/ofl/opensans/OpenSans-Italic%5Bwdth%2Cwght%5D.ttf" \
+            -o public/fonts/OpenSans-Italic.ttf
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

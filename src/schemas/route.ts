@@ -5,7 +5,9 @@ export const MooringTypeSchema = z.enum(['marina', 'buoy', 'anchor', 'marina_or_
 export const MooringSchema = z.object({
   type: MooringTypeSchema,
   name: z.string().optional(),
-  phone: z.string().optional(),
+  phones: z.array(z.string()).default([]),
+  vhf: z.string().optional(),
+  google_map: z.string().url().optional(),
   booking_urls: z.array(z.string().url()).default([]),
   notes: z.string().optional(),
 });
@@ -26,7 +28,7 @@ export const POISchema = z.object({
 export const PlanSchema = z.object({
   trigger: z.string().optional(),
   destinations: z.array(z.string()),
-  mooring: MooringSchema,
+  moorings: z.array(MooringSchema).min(1),
   activities: z.array(z.string()).default([]),
   pois: z.array(POISchema).default([]),
   warnings: z.array(WarningSchema).default([]),
@@ -48,7 +50,7 @@ export const SciroccoVariantSchema = z.object({
   title: z.string(),
   condition: z.string(),
   shelter: z.string(),
-  mooring: MooringSchema,
+  moorings: z.array(MooringSchema).min(1),
   pois: z.array(POISchema).default([]),
   return_notes: z.string().optional(),
 });

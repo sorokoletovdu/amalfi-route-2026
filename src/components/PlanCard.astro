@@ -1,5 +1,5 @@
 ---
-import type { Plan } from '../schemas/route';
+import type { Plan, MooringType } from '../schemas/route';
 
 interface Props {
   plan: Plan;
@@ -7,6 +7,13 @@ interface Props {
 }
 
 const { plan, variant } = Astro.props;
+
+const MOORING_LABELS: Record<MooringType, string> = {
+  marina:          'Марина',
+  buoy:            'Буй',
+  anchor:          'Якорь',
+  marina_or_anchor: 'Марина / Якорь',
+};
 
 const V = {
   a: {
@@ -51,33 +58,48 @@ const s = V[variant];
     ))}
   </div>
 
-  <!-- Mooring block -->
-  <div class="mb-3 rounded-md bg-white/60 px-3 py-2 text-sm">
-    <div class="font-semibold">
-      ⚓ {plan.mooring.name ?? plan.mooring.type}
-      {plan.mooring.phone && (
-        <a href={`tel:${plan.mooring.phone}`} class="ml-2 font-normal text-[var(--color-sea)] underline">
-          {plan.mooring.phone}
-        </a>
-      )}
-    </div>
-    {plan.mooring.notes && (
-      <p class="mt-1 text-xs text-[var(--color-muted)]">{plan.mooring.notes}</p>
-    )}
-    {plan.mooring.booking_urls.length > 0 && (
-      <div class="mt-2 flex flex-wrap gap-1">
-        {plan.mooring.booking_urls.map((url, i) => (
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-block rounded border border-[var(--color-sea)] bg-white px-2 py-0.5 text-xs text-[var(--color-sea)] transition-colors hover:bg-[var(--color-sea-pale)]"
-          >
-            {i === 0 ? '📋 Забронировать' : '📋 Navily'}
+  <!-- Mooring blocks -->
+  <div class="mb-3 space-y-2">
+    {plan.moorings.map((m) => (
+      <div class="rounded-md bg-white/60 px-3 py-2 text-sm">
+        <div class="flex flex-wrap items-center gap-1.5 font-semibold">
+          <span>⚓</span>
+          <span class="rounded bg-[var(--color-sea)] px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
+            {MOORING_LABELS[m.type]}
+          </span>
+          {m.name && <span>{m.name}</span>}
+          {m.phones.map((p) => (
+            <a href={`tel:${p}`} class="font-normal text-[var(--color-sea)] underline">{p}</a>
+          ))}
+        </div>
+        {m.vhf && (
+          <p class="mt-1 text-xs text-[var(--color-muted)]">VHF: <strong class="text-[var(--color-text)]">{m.vhf}</strong></p>
+        )}
+        {m.google_map && (
+          <a href={m.google_map} target="_blank" rel="noopener noreferrer"
+             class="mt-1 inline-block text-xs text-[var(--color-sea)] underline hover:text-[var(--color-sea-deep)]">
+            🗺 Google Maps
           </a>
-        ))}
+        )}
+        {m.notes && (
+          <p class="mt-1 text-xs text-[var(--color-muted)]">{m.notes}</p>
+        )}
+        {m.booking_urls.length > 0 && (
+          <div class="mt-2 flex flex-wrap gap-1">
+            {m.booking_urls.map((url, i) => (
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-block rounded border border-[var(--color-sea)] bg-white px-2 py-0.5 text-xs text-[var(--color-sea)] transition-colors hover:bg-[var(--color-sea-pale)]"
+              >
+                {i === 0 ? '📋 Забронировать' : '📋 Navily'}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
-    )}
+    ))}
   </div>
 
   <!-- Activities (legacy) -->

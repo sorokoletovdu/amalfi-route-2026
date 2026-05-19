@@ -1,6 +1,6 @@
 # Write-Ahead Log {#root}
 
-Last updated: 2026-05-19 | Session: schema v3 (POI + SciroccoVariant), new Salerno-based route, CI fixes
+Last updated: 2026-05-19 | Session: local stack working; Open Sans; Mermaid accordion; PDF emoji fix; single source of truth
 
 > **SESSION OPEN PROCEDURE**
 >
@@ -12,43 +12,40 @@ Last updated: 2026-05-19 | Session: schema v3 (POI + SciroccoVariant), new Saler
 
 ## Current State {#state}
 
-**Overall status**: schema v3 + new route data in place; web builds clean; PDF needs fonts; design is functional
+**Overall status**: everything works locally — web builds clean, PDF generates clean (10 pages, Open Sans, no emojis), Mermaid diagram is data-driven
 
 | Area | Status |
 |---|---|
-| Project scaffold | Complete — committed 45915a0 |
+| Project scaffold | Complete |
 | Astro + Tailwind v4 + TS strict | Complete |
-| Zod schema (`src/schemas/route.ts`) | **Complete v3** — POI, morning_pois, SciroccoVariant, BoatSchema extended, home_base |
-| Route data (`src/content/route/amalfi.md`) | **Complete v3** — Salerno base, 7 days, POI data, 2 Scirocco variants |
-| Web components | **Complete** — PlanCard (POIs), DaySection (morning POIs), SciroccoSection (variants), RouteDiagram (new diagram) |
-| Route decision diagram | **Complete** — RouteDiagram.astro + public/route-diagram.html (both updated to new route) |
-| PDF generation script | Current — no changes needed |
-| PDF layout (`AmalfiRoutePDF.tsx`) | **Updated v3** — POIs in PlanCardPDF, morning_pois in DayPage, SciroccoBranchPage uses SciroccoVariant |
-| GitHub Actions deploy workflow | Complete |
-| Git remote | Configured → `https://github.com/sorokoletovdu/amalfi-route-2026.git` |
-| Fonts (`public/fonts/`) | **Missing** — Inter + Playfair Display TTFs required before PDF builds |
-| Visual polish / final design | **Not started** — functional but unstyled beyond plan colours |
+| Zod schema (`src/schemas/route.ts`) | Complete v3 — POI, morning_pois, SciroccoVariant, BoatSchema, home_base |
+| Route data (`src/content/route/amalfi.md`) | Complete v3 — Salerno base, 7 days, POI data, 2 Scirocco variants |
+| Web components | Complete — all mobile-responsive |
+| Route decision diagram | **Complete** — data-driven from amalfi.md; accordion; lazy Mermaid load |
+| PDF layout (`AmalfiRoutePDF.tsx`) | **Complete** — Open Sans, no emojis, POI links via `<Link>`, booking links |
+| Fonts (`public/fonts/`) | **Complete** — OpenSans.ttf + OpenSans-Italic.ttf (variable); Playfair removed |
+| Font registration (`src/pdf/fonts.ts`) | Complete — Open Sans only |
+| `@types/node` + tsconfig | Complete — added to fix TS errors on path module |
+| GitHub Actions deploy workflow | **Updated** — downloads OpenSans variable fonts from Google Fonts GitHub |
+| Mobile layout | **Complete** — header truncates, responsive padding/type scale |
+| Visual polish | **Not started** — functional but unstyled beyond plan colours |
 | Data-fetching script | **Not started** — TripAdvisor + Navily enrichment |
-| pnpm-workspace.yaml | **Deleted** — `onlyBuiltDependencies` moved to `package.json` under `pnpm` key |
 
 ---
 
 ## Pending Work {#pending}
 
-- [ ] **Fonts**: download Inter + Playfair Display TTFs into `public/fonts/` so `pnpm generate-pdf` works.
-  Files needed: `Inter-Regular.ttf`, `Inter-Medium.ttf`, `Inter-SemiBold.ttf`, `Inter-Bold.ttf`,
-  `PlayfairDisplay-Regular.ttf`, `PlayfairDisplay-Bold.ttf`
-- [ ] **Visual polish**: refine typography, spacing, and layout — functional design is in place but
-  needs visual polish pass on `src/pages/index.astro` and components
-- [ ] **Data-fetching script**: `scripts/fetch-enrichments.ts` — schema now has `tripadvisor_url` on POIs;
-  scraper can enrich ratings/photos
-- [ ] **Commit**: working tree is dirty — run `git add -A && git commit`
-- [x] **CI fix**: removed `pnpm-workspace.yaml` (caused "packages field missing" error in CI)
-- [x] **PDF duplicate fix**: removed duplicate `AmalfiRoutePDF` export + orphaned JSX in `AmalfiRoutePDF.tsx`
-- [x] **Dead code cleanup**: deleted `AnchoringCard.astro`, `POICard.astro`, prose body from `amalfi.md`
-- [x] **Schema v3**: POISchema, morning_pois, SciroccoVariantSchema, BoatSchema extended, home_base
-- [x] **Route data v3**: new Salerno base, 7-day route, POI data per plan, 2 Scirocco variants
-- [x] **Route diagram**: updated to new route logic in both RouteDiagram.astro and public/route-diagram.html
+- [ ] **Commit** — working tree is dirty; all session changes uncommitted. Run:
+  `git add -A && git commit`
+- [ ] **Visual polish** — run `pnpm dev`, review in browser, refine typography/spacing in `src/styles/global.css` and components
+- [ ] **Data-fetching script** — `scripts/fetch-enrichments.ts`; schema has `tripadvisor_url` on POIs
+- [ ] **public/route-diagram.html** — standalone diagram page still has old hardcoded content; update or remove it
+- [x] Fonts downloaded and working (Open Sans variable)
+- [x] PDF clean: Open Sans, no emojis, POI TripAdvisor links, booking links
+- [x] Mermaid: data-driven from amalfi.md, accordion collapsed by default, lazy CDN load
+- [x] Mobile layout fixed across all components
+- [x] CI font download script fixed (Open Sans from Google Fonts GitHub)
+- [x] `amalfi.md` is single source of truth for web + PDF + diagram
 
 ---
 
@@ -69,34 +66,32 @@ No open REVIEW items.
 
 ## Known Issues {#issues}
 
-1. **PDF builds will fail** until Inter + Playfair Display TTFs are added to `public/fonts/`.
-   The CI workflow includes a font-download step that may be fragile — verify after first push.
-2. **CI font download** in `.github/workflows/deploy.yml` uses a `curl`+`unzip` one-liner that
-   may fail depending on the Inter release zip structure. Consider committing TTFs directly or
-   using `@fontsource` packages instead.
-3. **Astro "Duplicate id" warning** on `amalfi.md` — benign glob-loader quirk with single-entry
-   collections; does not affect build output.
+1. **Fonts in `.gitignore`?** — `public/fonts/*.ttf` is not gitignored (checked), but the CI download step must succeed for Pages deploy since TTFs are not committed to the repo.
+2. **`public/route-diagram.html`** — standalone diagram page still has the old hardcoded Mermaid diagram from a previous session; it will diverge from `amalfi.md` if the route changes.
+3. **Astro "Duplicate id" warning** on `amalfi.md` — benign glob-loader quirk with single-entry collections; does not affect build output.
 
 ---
 
 ## Next Session Must Read {#next}
 
-Schema v3 and route data v3 are live. Web builds clean. Working tree is uncommitted.
+Everything works locally. Working tree is uncommitted (all session work).
 
-Next priorities:
-1. **Commit** — `git add -A && git commit` (schema, data, components, CI fix all uncommitted)
-2. **Fonts** — add TTFs to `public/fonts/` then run `pnpm generate-pdf` to test full PDF pipeline
-3. **Visual polish** — run `pnpm dev`, review in browser, refine in `src/styles/global.css` and components
+**First action**: `git add -A && git commit` — commit everything from this session.
 
-Key changed files this session:
-- `src/schemas/route.ts` — v3 schema (POI, morning_pois, SciroccoVariant, BoatSchema, home_base)
-- `src/content/route/amalfi.md` — complete YAML rewrite (Salerno base, new 7-day route)
-- `src/components/PlanCard.astro` — POI list with TripAdvisor links
-- `src/components/DaySection.astro` — morning_pois block
-- `src/components/SciroccoSection.astro` — rewritten for SciroccoVariant schema
-- `src/components/RouteDiagram.astro` — new Mermaid diagram
-- `src/pages/index.astro` — home_base display, boat link, SciroccoSection prop fix
-- `src/pdf/AmalfiRoutePDF.tsx` — POIs in PlanCardPDF/DayPage, SciroccoBranchPage rewritten
-- `public/route-diagram.html` — replaced with updated decision tree
-- `package.json` — `onlyBuiltDependencies` under `pnpm` key (CI fix)
-- Deleted: `pnpm-workspace.yaml`, `src/components/AnchoringCard.astro`, `src/components/POICard.astro`
+**Then**:
+- Open `http://localhost:4321/amalfi-route-2026` in browser and do a visual review pass
+- Open `public/amalfi-route.pdf` and verify all 10 pages look correct
+- Decide on visual polish priorities
+
+Key files changed this session (not yet committed):
+- `public/fonts/` — OpenSans.ttf, OpenSans-Italic.ttf (Playfair removed)
+- `src/pdf/fonts.ts` — Open Sans only, variable fonts
+- `src/pdf/AmalfiRoutePDF.tsx` — Open Sans throughout, emojis replaced, POI+booking links added
+- `src/layouts/Layout.astro` — Open Sans from Google Fonts, Playfair removed
+- `src/styles/global.css` — --font-sans and --font-heading both → Open Sans
+- `tsconfig.json` + `package.json` — @types/node added
+- `src/pages/index.astro` — header mobile fix (flex-1 + truncate)
+- `src/components/DaySection.astro` — text-xl sm:text-2xl
+- `src/components/SciroccoSection.astro` — p-4 sm:p-6
+- `src/components/RouteDiagram.astro` — full rewrite: data-driven diagram from amalfi.md, accordion, lazy Mermaid
+- `.github/workflows/deploy.yml` — CI font download: Open Sans variable fonts only

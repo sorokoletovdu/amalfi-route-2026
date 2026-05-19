@@ -5,8 +5,16 @@ import {
   Text,
   View,
   StyleSheet,
+  Link,
 } from '@react-pdf/renderer';
 import type { Route, Day, Plan, SciroccoVariant } from '../schemas/route';
+
+const MOORING_LABELS: Record<string, string> = {
+  marina:          'Марина',
+  buoy:            'Буй',
+  anchor:          'Якорь',
+  marina_or_anchor: 'Марина/Якорь',
+};
 
 // ── Palette (mirrors global.css) ────────────────────────────
 const C = {
@@ -40,7 +48,7 @@ const C = {
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Inter',
+    fontFamily: 'Open Sans',
     fontSize: 9,
     color: C.text,
     paddingTop: 20,
@@ -54,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   coverTitle: {
-    fontFamily: 'Playfair',
+    fontFamily: 'Open Sans',
     fontSize: 26,
     fontWeight: 700,
     color: C.seaDeep,
@@ -116,7 +124,7 @@ const styles = StyleSheet.create({
     fontWeight: 700,
   },
   dayTitle: {
-    fontFamily: 'Playfair',
+    fontFamily: 'Open Sans',
     fontSize: 16,
     fontWeight: 700,
     color: C.seaDeep,
@@ -237,7 +245,7 @@ const styles = StyleSheet.create({
   },
   // ── Overview / decision table ────────────────────────────
   overviewHeader: {
-    fontFamily: 'Playfair',
+    fontFamily: 'Open Sans',
     fontSize: 18,
     fontWeight: 700,
     color: C.seaDeep,
@@ -313,7 +321,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sciroccoPageTitle: {
-    fontFamily: 'Playfair',
+    fontFamily: 'Open Sans',
     fontSize: 18,
     fontWeight: 700,
     color: C.sciroccoText,
@@ -400,21 +408,42 @@ function PlanCardPDF({ plan, variant }: { plan: Plan; variant: 'a' | 'b' }) {
         ))}
       </View>
 
-      {/* Mooring */}
-      <View style={styles.mooringBox}>
-        <Text style={styles.mooringName}>⚓ {plan.mooring.name ?? plan.mooring.type}</Text>
-        {plan.mooring.phone && (
-          <Text style={styles.mooringPhone}>{plan.mooring.phone}</Text>
-        )}
-        {plan.mooring.notes && (
-          <Text style={styles.mooringNote}>{plan.mooring.notes}</Text>
-        )}
-        {plan.mooring.booking_urls.length > 0 && (
-          <Text style={[styles.mooringNote, { color: C.sea }]}>
-            {plan.mooring.booking_urls.map((_, i) => (i === 0 ? '📋 Бронирование' : ' · Navily')).join('')}
-          </Text>
-        )}
-      </View>
+      {/* Moorings */}
+      {plan.moorings.map((m, mi) => (
+        <View key={mi} style={[styles.mooringBox, mi > 0 ? { marginTop: 4 } : {}]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2, flexWrap: 'wrap' }}>
+            <View style={{ backgroundColor: C.sea, borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1 }}>
+              <Text style={{ fontSize: 6.5, fontWeight: 700, color: C.white }}>
+                {MOORING_LABELS[m.type] ?? m.type}
+              </Text>
+            </View>
+            {m.name && (
+              <Text style={[styles.mooringName, { marginBottom: 0 }]}>{m.name}</Text>
+            )}
+          </View>
+          {m.phones.map((p: string, pi: number) => (
+            <Text key={pi} style={styles.mooringPhone}>{p}</Text>
+          ))}
+          {m.vhf && (
+            <Text style={styles.mooringNote}>VHF: {m.vhf}</Text>
+          )}
+          {m.google_map && (
+            <Link src={m.google_map}>
+              <Text style={[styles.mooringNote, { color: C.sea }]}>Google Maps</Text>
+            </Link>
+          )}
+          {m.notes && (
+            <Text style={styles.mooringNote}>{m.notes}</Text>
+          )}
+          {m.booking_urls.map((url: string, i: number) => (
+            <Link key={i} src={url}>
+              <Text style={[styles.mooringNote, { color: C.sea }]}>
+                {i === 0 ? 'Забронировать' : 'Navily'}
+              </Text>
+            </Link>
+          ))}
+        </View>
+      ))}
 
       {/* Activities */}
       {plan.activities.map((act, i) => (
@@ -424,12 +453,18 @@ function PlanCardPDF({ plan, variant }: { plan: Plan; variant: 'a' | 'b' }) {
       {/* POIs */}
       {plan.pois.length > 0 && (
         <View style={{ marginTop: 4 }}>
-          <Text style={[styles.mooringNote, { fontWeight: 'bold', marginBottom: 2 }]}>📍 Что делать</Text>
+          <Text style={[styles.mooringNote, { fontWeight: 'bold', marginBottom: 2 }]}>Что делать:</Text>
           {plan.pois.map((poi, i) => (
             <View key={i} style={{ flexDirection: 'row', gap: 3, marginBottom: 3 }}>
               <Text style={[styles.activityItem, { color: C.sea, minWidth: 10 }]}>{i + 1}.</Text>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.activityItem, { fontWeight: 'bold' }]}>{poi.name}</Text>
+                {poi.tripadvisor_url ? (
+                  <Link src={poi.tripadvisor_url}>
+                    <Text style={[styles.activityItem, { fontWeight: 'bold', color: C.sea }]}>{poi.name}</Text>
+                  </Link>
+                ) : (
+                  <Text style={[styles.activityItem, { fontWeight: 'bold' }]}>{poi.name}</Text>
+                )}
                 <Text style={[styles.mooringNote, { marginTop: 1 }]}>{poi.description}</Text>
               </View>
             </View>
@@ -448,8 +483,8 @@ function PlanCardPDF({ plan, variant }: { plan: Plan; variant: 'a' | 'b' }) {
             },
           ]}
         >
-          <Text style={{ fontSize: 8 }}>
-            {w.severity === 'critical' ? '🚨' : '⚠️'}
+          <Text style={{ fontSize: 8, fontWeight: 700 }}>
+            {w.severity === 'critical' ? '!!' : '!'}
           </Text>
           <Text
             style={[
@@ -465,7 +500,7 @@ function PlanCardPDF({ plan, variant }: { plan: Plan; variant: 'a' | 'b' }) {
       {/* Scirocco note */}
       {plan.scirocco_note && (
         <View style={styles.sciroccoNote}>
-          <Text style={{ fontSize: 8 }}>🌪️</Text>
+          <Text style={[styles.sciroccoNoteText, { fontWeight: 700 }]}>~</Text>
           <Text style={styles.sciroccoNoteText}>{plan.scirocco_note}</Text>
         </View>
       )}
@@ -500,12 +535,18 @@ function DayPage({ day, routeTitle }: { day: Day; routeTitle: string }) {
       {/* Morning POIs */}
       {day.morning_pois.length > 0 && (
         <View style={{ marginBottom: 6 }}>
-          <Text style={[styles.mooringNote, { fontWeight: 'bold', marginBottom: 2 }]}>📍 До выхода</Text>
+          <Text style={[styles.mooringNote, { fontWeight: 'bold', marginBottom: 2 }]}>До выхода:</Text>
           {day.morning_pois.map((poi, i) => (
             <View key={i} style={{ flexDirection: 'row', gap: 3, marginBottom: 2 }}>
               <Text style={[styles.activityItem, { color: C.sea, minWidth: 10 }]}>{i + 1}.</Text>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.activityItem, { fontWeight: 'bold' }]}>{poi.name}</Text>
+                {poi.tripadvisor_url ? (
+                  <Link src={poi.tripadvisor_url}>
+                    <Text style={[styles.activityItem, { fontWeight: 'bold', color: C.sea }]}>{poi.name}</Text>
+                  </Link>
+                ) : (
+                  <Text style={[styles.activityItem, { fontWeight: 'bold' }]}>{poi.name}</Text>
+                )}
                 <Text style={[styles.mooringNote, { marginTop: 1 }]}>{poi.description}</Text>
               </View>
             </View>
@@ -544,9 +585,9 @@ type OverviewRow = {
 function buildOverviewRows(route: Route): OverviewRow[] {
   return route.days.map((d) => ({
     day: `День ${d.day}\n${d.title}`,
-    planA: `${d.plan_a.destinations.join(' → ')}\n${d.plan_a.mooring.name ?? d.plan_a.mooring.type}`,
+    planA: `${d.plan_a.destinations.join(' → ')}\n${d.plan_a.moorings.map(m => m.name ?? m.type).join(' / ')}`,
     planB: d.plan_b
-      ? `${d.plan_b.destinations.join(' → ')}\n${d.plan_b.mooring.name ?? d.plan_b.mooring.type}`
+      ? `${d.plan_b.destinations.join(' → ')}\n${d.plan_b.moorings.map(m => m.name ?? m.type).join(' / ')}`
       : '',
     scirocco: d.plan_a.scirocco_note ?? '',
   }));
@@ -568,7 +609,7 @@ function OverviewPage({ route }: { route: Route }) {
         <Text style={[styles.tableHeaderCell, { width: col.day }]}>День</Text>
         <Text style={[styles.tableHeaderCell, { width: col.planA }]}>План А</Text>
         <Text style={[styles.tableHeaderCell, { width: col.planB }]}>План Б</Text>
-        <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Scirocco 🌪️</Text>
+        <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Scirocco</Text>
       </View>
 
       {rows.map((row, i) => (
@@ -608,7 +649,7 @@ function SciroccoBranchPage({ branch, routeTitle }: { branch: SciroccoVariant[];
     <Page size="A4" style={styles.page} break>
       <View style={styles.sciroccoPageHeader}>
         <View>
-          <Text style={styles.sciroccoPageTitle}>🌪️ Красная Ветка — Scirocco</Text>
+          <Text style={styles.sciroccoPageTitle}>Красная Ветка — Scirocco</Text>
           <Text style={styles.sciroccoPageSubtitle}>
             Активируется при устойчивом южном ветре. Выберите вариант по местоположению.
           </Text>
@@ -620,28 +661,51 @@ function SciroccoBranchPage({ branch, routeTitle }: { branch: SciroccoVariant[];
           <Text style={styles.sciroccoDayLabel}>ВАРИАНТ {i + 1}</Text>
           <Text style={styles.sciroccoDayTitle}>{v.title}</Text>
           <Text style={[styles.activityItem, { color: C.sciroccoText, fontStyle: 'italic', marginBottom: 3 }]}>
-            🎯 {v.condition}
+            {v.condition}
           </Text>
-          <View style={styles.mooringBox}>
-            <Text style={[styles.mooringName, { color: C.sciroccoText }]}>
-              ⚓ {v.shelter}
-            </Text>
-            {v.mooring.notes && (
-              <Text style={styles.mooringNote}>{v.mooring.notes}</Text>
-            )}
-          </View>
+          {v.moorings.map((m, mi) => (
+            <View key={mi} style={[styles.mooringBox, mi > 0 ? { marginTop: 4 } : {}]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2, flexWrap: 'wrap' }}>
+                <View style={{ backgroundColor: C.sciroccoBorder, borderRadius: 3, paddingHorizontal: 4, paddingVertical: 1 }}>
+                  <Text style={{ fontSize: 6.5, fontWeight: 700, color: C.white }}>
+                    {MOORING_LABELS[m.type] ?? m.type}
+                  </Text>
+                </View>
+                {m.name && (
+                  <Text style={[styles.mooringName, { marginBottom: 0, color: C.sciroccoText }]}>{m.name}</Text>
+                )}
+              </View>
+              {m.phones.map((p: string, pi: number) => (
+                <Text key={pi} style={styles.mooringPhone}>{p}</Text>
+              ))}
+              {m.google_map && (
+                <Link src={m.google_map}>
+                  <Text style={[styles.mooringNote, { color: C.sea }]}>Google Maps</Text>
+                </Link>
+              )}
+              {m.notes && (
+                <Text style={styles.mooringNote}>{m.notes}</Text>
+              )}
+            </View>
+          ))}
           {v.pois.map((poi, j) => (
             <View key={j} style={{ flexDirection: 'row', gap: 3, marginBottom: 3 }}>
               <Text style={[styles.activityItem, { color: C.sea, minWidth: 10 }]}>{j + 1}.</Text>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.activityItem, { color: C.sciroccoText, fontWeight: 'bold' }]}>{poi.name}</Text>
+                {poi.tripadvisor_url ? (
+                  <Link src={poi.tripadvisor_url}>
+                    <Text style={[styles.activityItem, { color: C.sea, fontWeight: 'bold' }]}>{poi.name}</Text>
+                  </Link>
+                ) : (
+                  <Text style={[styles.activityItem, { color: C.sciroccoText, fontWeight: 'bold' }]}>{poi.name}</Text>
+                )}
                 <Text style={[styles.mooringNote, { marginTop: 1 }]}>{poi.description}</Text>
               </View>
             </View>
           ))}
           {v.return_notes && (
             <Text style={[styles.activityItem, { color: C.sciroccoBorder, fontStyle: 'italic', marginTop: 4 }]}>
-              ↩ {v.return_notes}
+              {v.return_notes}
             </Text>
           )}
         </View>
@@ -669,14 +733,14 @@ export function AmalfiRoutePDF({ route }: { route: Route }) {
         {route.subtitle && <Text style={styles.coverSubtitle}>{route.subtitle}</Text>}
         <View style={styles.coverMetaRow}>
           <View>
-            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>🚢 Яхта</Text>
+            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>Яхта</Text>
             <Text style={[styles.coverMetaItem, styles.coverMetaValue]}>{route.boat.name}</Text>
             <Text style={styles.coverMetaItem}>
               {route.boat.length_m}м × {route.boat.beam_m}м · осадка {route.boat.draft_m}м
             </Text>
           </View>
           <View>
-            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>👥 Экипаж</Text>
+            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>Экипаж</Text>
             <Text style={[styles.coverMetaItem, styles.coverMetaValue]}>
               {route.crew.adults} взрослых + {route.crew.children} детей
             </Text>
@@ -685,14 +749,14 @@ export function AmalfiRoutePDF({ route }: { route: Route }) {
             )}
           </View>
           <View>
-            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>📅 Даты</Text>
+            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>Даты</Text>
             <Text style={[styles.coverMetaItem, styles.coverMetaValue]}>{route.dates}</Text>
           </View>
         </View>
         {route.rules.length > 0 && (
           <View style={styles.coverRules}>
             {route.rules.map((rule, i) => (
-              <Text key={i} style={styles.coverRule}>📌 {rule}</Text>
+              <Text key={i} style={styles.coverRule}>• {rule}</Text>
             ))}
           </View>
         )}

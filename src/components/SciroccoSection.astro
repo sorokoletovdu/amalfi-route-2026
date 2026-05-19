@@ -8,7 +8,7 @@ interface Props {
 const { variants } = Astro.props;
 ---
 
-<section class="mt-14 rounded-2xl border-2 border-[var(--color-scirocco-border)] bg-[var(--color-scirocco)] p-6">
+<section class="mt-14 rounded-2xl border-2 border-[var(--color-scirocco-border)] bg-[var(--color-scirocco)] p-4 sm:p-6">
   <!-- Header -->
   <div class="mb-6 flex items-center gap-3">
     <span class="text-3xl">🌪️</span>
@@ -39,13 +39,35 @@ const { variants } = Astro.props;
           🎯 {v.condition}
         </p>
 
-        <!-- Shelter + mooring -->
-        <div class="mb-3 rounded-md bg-white/70 px-3 py-2 text-sm">
-          <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">Укрытие</p>
-          <span class="font-semibold">⚓ {v.shelter}</span>
-          {v.mooring.notes && (
-            <p class="mt-1 text-xs text-[var(--color-muted)]">{v.mooring.notes}</p>
-          )}
+        <!-- Shelter + moorings -->
+        <div class="mb-3 space-y-1.5">
+          <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">Укрытие: {v.shelter}</p>
+          {v.moorings.map((m) => (
+            <div class="rounded-md bg-white/70 px-3 py-2 text-sm">
+              <div class="flex flex-wrap items-center gap-1.5 font-semibold">
+                <span>⚓</span>
+                <span class="rounded bg-[var(--color-scirocco-border)] px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
+                  {m.type === 'marina' ? 'Марина' : m.type === 'buoy' ? 'Буй' : m.type === 'anchor' ? 'Якорь' : 'Марина / Якорь'}
+                </span>
+                {m.name && <span>{m.name}</span>}
+                {m.phones.map((p) => (
+                  <a href={`tel:${p}`} class="font-normal text-[var(--color-sea)] underline">{p}</a>
+                ))}
+              </div>
+              {m.vhf && (
+                <p class="mt-1 text-xs text-[var(--color-muted)]">VHF: <strong>{m.vhf}</strong></p>
+              )}
+              {m.google_map && (
+                <a href={m.google_map} target="_blank" rel="noopener noreferrer"
+                   class="mt-1 inline-block text-xs text-[var(--color-sea)] underline hover:text-[var(--color-sea-deep)]">
+                  🗺 Google Maps
+                </a>
+              )}
+              {m.notes && (
+                <p class="mt-1 text-xs text-[var(--color-muted)]">{m.notes}</p>
+              )}
+            </div>
+          ))}
         </div>
 
         <!-- POIs -->

@@ -1,25 +1,109 @@
 ---
-// Static decision-tree diagram — Mermaid rendered client-side.
-// Full standalone version is also available at /route-diagram.html
+import { getCollection } from 'astro:content';
+import type { Route } from '../schemas/route';
+
+const entries = await getCollection('route');
+const route = entries[0]?.data as Route;
+
+/** Replace double-quotes with single-quotes so Mermaid label strings don't break. */
+function q(s: string): string {
+  return s.replace(/"/g, "'");
+}
+
+const MOORING_LABELS: Record<string, string> = {
+  marina:          'Марина',
+  buoy:            'Буй',
+  anchor:          'Якорь',
+  marina_or_anchor: 'Марина/Якорь',
+};
+
+function mooringLabel(moorings: Route['days'][0]['plan_a']['moorings']): string {
+  const last = moorings[moorings.length - 1];
+  if (!last) return '';
+  const t = MOORING_LABELS[last.type] ?? last.type;
+  return last.name ? `[${t}] ${q(last.name)}` : t;
+}
+
+function generateDiagram(r: Route): string {
+  const lines: string[] = [
+    'graph TD',
+    '  classDef planA fill:#d4edda,stroke:#28a745,stroke-width:2px;',
+    '  classDef planB fill:#fff3cd,stroke:#ffc107,stroke-width:2px;',
+    '  classDef scirocco fill:#f8d7da,stroke:#dc3545,stroke-width:2px;',
+    '  classDef condition fill:#e2e3e5,stroke:#6c757d,stroke-width:1px;',
+    '  classDef base fill:#cce5ff,stroke:#007bff,stroke-width:2px;',
+    '',
+  ];
+
+  const home = q(r.home_base ?? '');
+  const first = r.days[0];
+
+  // Start node
+  lines.push(`  Start["${first?.date ?? ''}<br/>База: ${home}"]:::base`);
+
+  // Track which nodes the next step should connect from.
+  // After days with both Plan A and Plan B, both nodes feed forward.
+  let prev: string[] = ['Start'];
+
+  for (const day of r.days) {
+    const id = `D${day.day}`;
+
+    if (day.plan_b) {
+      const condId = `${id}C`;
+      const condLabel = q(day.plan_a.trigger ?? `День ${day.day}?`);
+      lines.push(`  ${condId}{"${condLabel}"}:::condition`);
+      prev.forEach(p => lines.push(`  ${p} --> ${condId}`));
+
+      const aId = `${id}A`;
+      const bId = `${id}B`;
+
+      const aLabel =
+        `День ${day.day} · ${q(day.plan_a.destinations.join(' - '))}<br/>` +
+        mooringLabel(day.plan_a.moorings);
+      const bLabel =
+        `День ${day.day} Б · ${q(day.plan_b.destinations.join(' - '))}<br/>` +
+        mooringLabel(day.plan_b.moorings);
+
+      lines.push(`  ${condId} -- "Да" --> ${aId}["${aLabel}"]:::planA`);
+      lines.push(`  ${condId} -- "Нет" --> ${bId}["${bLabel}"]:::planB`);
+
+      prev = [aId, bId];
+    } else {
+      const aId = `${id}A`;
+      const aLabel =
+        `День ${day.day} · ${q(day.plan_a.destinations.join(' - '))}<br/>` +
+        mooringLabel(day.plan_a.moorings);
+
+      prev.forEach(p => lines.push(`  ${p} --> ${aId}["${aLabel}"]:::planA`));
+      prev = [aId];
+    }
+  }
+
+  // End node
+  const last = r.days[r.days.length - 1];
+  lines.push(`  End["${last?.date ?? ''}<br/>Финиш: ${home}"]:::base`);
+  prev.forEach(p => lines.push(`  ${p} --> End`));
+
+  // Scirocco variants as clearly-labelled disconnected nodes
+  if (r.scirocco_branch.length > 0) {
+    lines.push('');
+    r.scirocco_branch.forEach((v, i) => {
+      const sciId = `Sci${i + 1}`;
+      const label =
+        `Scirocco ${i + 1}: ${q(v.title)}<br/>${q(v.condition)}<br/>Укрытие: ${q(v.shelter)}`;
+      lines.push(`  ${sciId}["${label}"]:::scirocco`);
+    });
+  }
+
+  return lines.join('\n');
+}
+
+const diagram = generateDiagram(route);
 ---
 
-<div class="route-diagram mb-10 rounded-xl border border-[var(--color-sea-light)] bg-white p-5 shadow-sm">
-  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-    <h2 class="font-heading text-xl font-semibold text-[var(--color-sea-deep)]">
-      🗺️ Схема маршрута: дерево решений
-    </h2>
-    <a
-      href="/route-diagram.html"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-xs text-[var(--color-sea)] underline hover:text-[var(--color-sea-deep)]"
-    >
-      Открыть полный экран ↗
-    </a>
-  </div>
-
+<div class="route-diagram mb-10 rounded-xl border border-[var(--color-sea-light)] bg-white p-3 shadow-sm sm:p-5">
   <!-- Legend -->
-  <div class="mb-4 flex flex-wrap gap-4 text-sm">
+  <div class="mb-3 flex flex-wrap gap-4 text-sm">
     <span class="flex items-center gap-1.5">
       <span class="inline-block h-3 w-5 rounded border border-[var(--color-plan-a-border)] bg-[var(--color-plan-a)]"></span>
       <span>План А</span>
@@ -34,67 +118,64 @@
     </span>
   </div>
 
-  <!-- Mermaid diagram -->
-  <div class="mermaid overflow-auto text-sm">
-graph TD
-  classDef planA fill:#d4edda,stroke:#28a745,stroke-width:2px;
-  classDef planB fill:#fff3cd,stroke:#ffc107,stroke-width:2px;
-  classDef scirocco fill:#f8d7da,stroke:#dc3545,stroke-width:2px;
-  classDef condition fill:#e2e3e5,stroke:#6c757d,stroke-width:1px;
-  classDef base fill:#cce5ff,stroke:#007bff,stroke-width:2px;
+  <!-- Accordion -->
+  <details class="group">
+    <summary class="flex cursor-pointer list-none items-center justify-between rounded-lg bg-[var(--color-sea-pale)] px-4 py-2.5 text-sm font-semibold text-[var(--color-sea-deep)] hover:bg-[var(--color-sea-light)]/40 select-none">
+      <span>🗺️ Схема маршрута: дерево решений</span>
+      <span class="transition-transform duration-200 group-open:rotate-180">▾</span>
+    </summary>
 
-  Start["День 1 · Сб 25.07<br/>База: Marina d'Arechi (Salerno)"]:::base --> Cond1{"Выход<br/>до 18:00?"}:::condition
-
-  Cond1 -- ДА --> D1A["План А: Minori<br/>Buи Minori Boat Service<br/>Вилла Romana / Sal De Riso"]:::planA
-  Cond1 -- НЕТ --> D1B["План Б: Maiori / Cetara<br/>Якорь / буи<br/>Замок / Colatura"]:::planB
-
-  D1A --> Cond2{"Переход 32 мили<br/>погода безопасна?"}:::condition
-  D1B --> Cond2
-
-  Cond2 -- ДА --> D2A["День 2 · План А: Ischia<br/>Cartaromana → салют в полночь<br/>Ночной переход → Sant'Angelo"]:::planA
-  Cond2 -- НЕТ --> D2_Sci["Scirocco: Остаться на востоке<br/>Укрытие в Salerno / Amalfi<br/>Автобус до Помпеи"]:::scirocco
-
-  D2A --> Cond3{"Места в Marina<br/>di Procida?"}:::condition
-
-  Cond3 -- ДА --> D3A["День 3 · План А: Procida (север)<br/>Marina di Procida<br/>Terra Murata / Катакомбы / Corricella"]:::planA
-  Cond3 -- НЕТ --> D3B["День 3 · План Б: Procida (юг)<br/>Буи Chiaiolella<br/>Pozzo Vecchio / Vivara"]:::planB
-
-  D3A --> Cond4{"Scirocco<br/>(южный ветер)?"}:::condition
-  D3B --> Cond4
-
-  Cond4 -- НЕТ --> D4A["День 4 · План А: Capri → Nerano<br/>Якорь Faraglioni · Буи Nerano<br/>Spaghetti Maria Grazia / Ieranto"]:::planA
-  Cond4 -- ДА --> D4_Sci["Scirocco Вариант 2: Baia / Pozzuoli<br/>Затонувший Рим (снорклинг 3м)<br/>Амфитеатр Флавиев"]:::scirocco
-
-  D4A --> Cond5{"Буи Grassi Boat<br/>свободны?"}:::condition
-
-  Cond5 -- ДА --> D5A["День 5 · План А: Li Galli → Positano<br/>Буи Grassi (Fornillo)<br/>Вилла MAR / Купол Assunta"]:::planA
-  Cond5 -- НЕТ --> D5B["День 5 · План Б: Conca dei Marini<br/>Якорь / буи<br/>Grotta dello Smeraldo"]:::planB
-
-  D5A --> Cond6{"Scirocco<br/>(южный ветер)?"}:::condition
-  D5B --> Cond6
-
-  Cond6 -- НЕТ --> Cond7{"Погода<br/>безопасна?"}:::condition
-  Cond6 -- ДА --> D6_Sci["Scirocco Вариант 1: Сорренто<br/>Marina di Puolo / Meta<br/>Regina Giovanna / Agriturismo"]:::scirocco
-
-  Cond7 -- ДА --> D6A["День 6 · План А: Amalfi → Cetara<br/>Музей бумаги / Дуомо<br/>Colatura di Alici"]:::planA
-  Cond7 -- НЕТ --> D6B["День 6 · План Б: Vietri sul Mare<br/>Якорь<br/>Столица керамики"]:::planB
-
-  D4_Sci --> D7["День 7 · Пт 31.07<br/>На топливный причал до 14:00!<br/>Marina d'Arechi (Salerno)"]:::base
-  D6_Sci --> D7
-  D6A --> D7
-  D6B --> D7
-  D2_Sci --> D7
-  </div>
+    <div class="mt-3">
+      <!-- Mermaid renders here; content injected by script below -->
+      <div id="mermaid-chart" class="overflow-auto text-sm"></div>
+      <div class="mt-2 text-right">
+        <a
+          href="/route-diagram.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-[var(--color-sea)] underline hover:text-[var(--color-sea-deep)]"
+        >
+          Открыть полный экран ↗
+        </a>
+      </div>
+    </div>
+  </details>
 </div>
 
-<script is:inline>
-  (function () {
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js';
-    s.onload = function () {
+<script is:inline define:vars={{ diagram }}>
+(function () {
+  function injectAndRender() {
+    var el = document.getElementById('mermaid-chart');
+    if (!el) return;
+    el.textContent = diagram;
+    el.classList.add('mermaid');
+    // @ts-ignore
+    if (typeof mermaid !== 'undefined') {
       // @ts-ignore
-      mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
-    };
-    document.head.appendChild(s);
-  })();
+      mermaid.run({ nodes: [el] });
+    }
+  }
+
+  // Load Mermaid only when the accordion is first opened (lazy)
+  var details = document.querySelector('.route-diagram details');
+  if (details) {
+    details.addEventListener('toggle', function onToggle() {
+      if (!details.open) return;
+      details.removeEventListener('toggle', onToggle);
+      // @ts-ignore
+      if (typeof mermaid !== 'undefined') {
+        injectAndRender();
+        return;
+      }
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js';
+      s.onload = function () {
+        // @ts-ignore
+        mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
+        injectAndRender();
+      };
+      document.head.appendChild(s);
+    });
+  }
+})();
 </script>
