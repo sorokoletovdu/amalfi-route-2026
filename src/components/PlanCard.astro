@@ -80,7 +80,7 @@ const s = V[variant];
     )}
   </div>
 
-  <!-- Activities -->
+  <!-- Activities (legacy) -->
   {plan.activities.length > 0 && (
     <ul class="mb-2 space-y-1">
       {plan.activities.map((act) => (
@@ -90,6 +90,28 @@ const s = V[variant];
         </li>
       ))}
     </ul>
+  )}
+
+  <!-- POIs -->
+  {plan.pois.length > 0 && (
+    <div class="mt-3 space-y-1.5">
+      <div class="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">📍 Что делать</div>
+      {plan.pois.map((poi, i) => (
+        <div class="flex gap-2 rounded-md bg-white/60 px-3 py-2 text-sm">
+          <span class="shrink-0 font-bold text-[var(--color-sea-deep)]">{i + 1}.</span>
+          <div class="min-w-0">
+            {poi.tripadvisor_url
+              ? <a href={poi.tripadvisor_url} target="_blank" rel="noopener noreferrer"
+                   class="font-medium text-[var(--color-sea)] underline hover:text-[var(--color-sea-deep)]">
+                  {poi.name} ↗
+                </a>
+              : <span class="font-medium">{poi.name}</span>
+            }
+            <p class="mt-0.5 text-xs leading-snug text-[var(--color-muted)]">{poi.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
   )}
 
   <!-- Warnings -->

@@ -1,11 +1,11 @@
 ---
-import type { SciroccoDay } from '../schemas/route';
+import type { SciroccoVariant } from '../schemas/route';
 
 interface Props {
-  days: SciroccoDay[];
+  variants: SciroccoVariant[];
 }
 
-const { days } = Astro.props;
+const { variants } = Astro.props;
 ---
 
 <section class="mt-14 rounded-2xl border-2 border-[var(--color-scirocco-border)] bg-[var(--color-scirocco)] p-6">
@@ -17,50 +17,65 @@ const { days } = Astro.props;
         Красная Ветка — Scirocco
       </h2>
       <p class="mt-0.5 text-sm text-[var(--color-scirocco-text)] opacity-80">
-        Активируется при устойчивом южном ветре начиная с Дня 3. Побережье Амальфи и юг Искьи
-        становятся опасными — переход под защиту гор Сорренто.
+        Активируется при устойчивом южном ветре. Выберите вариант в зависимости от того, где застал шторм.
       </p>
     </div>
   </div>
 
-  <!-- Days -->
-  <div class="space-y-4">
-    {days.map((day) => (
+  <!-- Variants -->
+  <div class="space-y-6">
+    {variants.map((v, idx) => (
       <div class="rounded-xl border-l-4 border-[var(--color-scirocco-border)] bg-white/60 p-4">
-        <!-- Day label row -->
-        <div class="mb-2 flex flex-wrap items-center gap-2">
+        <!-- Variant label + title -->
+        <div class="mb-3 flex flex-wrap items-center gap-2">
           <span class="rounded bg-[var(--color-scirocco-border)] px-2 py-0.5 text-xs font-bold text-white">
-            ДЕНЬ {day.day_ref}
+            ВАРИАНТ {idx + 1}
           </span>
-          <h3 class="font-semibold text-[var(--color-scirocco-text)]">{day.title}</h3>
-          {day.merges_to && (
-            <span class="ml-auto text-xs italic text-[var(--color-scirocco-text)] opacity-70">
-              ↩ {day.merges_to}
-            </span>
-          )}
+          <h3 class="font-semibold text-[var(--color-scirocco-text)]">{v.title}</h3>
         </div>
 
-        <!-- Destination -->
-        <p class="mb-2 text-sm font-semibold">📍 {day.destination}</p>
+        <!-- Condition -->
+        <p class="mb-3 rounded-md bg-[var(--color-scirocco)] px-3 py-1.5 text-xs italic text-[var(--color-scirocco-text)]">
+          🎯 {v.condition}
+        </p>
 
-        <!-- Mooring -->
+        <!-- Shelter + mooring -->
         <div class="mb-3 rounded-md bg-white/70 px-3 py-2 text-sm">
-          <span class="font-semibold">⚓ {day.mooring.name ?? day.mooring.type}</span>
-          {day.mooring.notes && (
-            <p class="mt-1 text-xs text-[var(--color-muted)]">{day.mooring.notes}</p>
+          <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">Укрытие</p>
+          <span class="font-semibold">⚓ {v.shelter}</span>
+          {v.mooring.notes && (
+            <p class="mt-1 text-xs text-[var(--color-muted)]">{v.mooring.notes}</p>
           )}
         </div>
 
-        <!-- Activities -->
-        {day.activities.length > 0 && (
-          <ul class="space-y-1">
-            {day.activities.map((act) => (
-              <li class="flex gap-2 text-sm leading-snug text-[var(--color-scirocco-text)]">
-                <span class="mt-0.5 shrink-0">·</span>
-                <span>{act}</span>
-              </li>
+        <!-- POIs -->
+        {v.pois.length > 0 && (
+          <div class="mb-3 space-y-1.5">
+            <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">📍 Что делать</p>
+            {v.pois.map((poi, i) => (
+              <div class="flex gap-2 rounded-md bg-white/50 px-3 py-2 text-sm">
+                <span class="shrink-0 font-bold text-[var(--color-scirocco-text)]">{i + 1}.</span>
+                <div class="min-w-0">
+                  {poi.tripadvisor_url
+                    ? <a href={poi.tripadvisor_url} target="_blank" rel="noopener noreferrer"
+                         class="font-medium text-[var(--color-sea)] underline hover:text-[var(--color-sea-deep)]">
+                        {poi.name} ↗
+                      </a>
+                    : <span class="font-medium text-[var(--color-scirocco-text)]">{poi.name}</span>
+                  }
+                  <p class="mt-0.5 text-xs leading-snug text-[var(--color-muted)]">{poi.description}</p>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
+        )}
+
+        <!-- Return notes -->
+        {v.return_notes && (
+          <p class="mt-2 flex gap-2 text-xs italic text-[var(--color-scirocco-text)] opacity-80">
+            <span class="shrink-0">↩</span>
+            <span>{v.return_notes}</span>
+          </p>
         )}
       </div>
     ))}

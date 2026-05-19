@@ -43,45 +43,47 @@ graph TD
   classDef condition fill:#e2e3e5,stroke:#6c757d,stroke-width:1px;
   classDef base fill:#cce5ff,stroke:#007bff,stroke-width:2px;
 
-  Start["День 1 · Сб 25.07<br/>База: Castellammare di Stabia"]:::base --> Cond1{"Выход<br/>до 18:00?"}:::condition
+  Start["День 1 · Сб 25.07<br/>База: Marina d'Arechi (Salerno)"]:::base --> Cond1{"Выход<br/>до 18:00?"}:::condition
 
-  Cond1 -- ДА --> D1A["План А: Procida<br/>Marina di Procida<br/>Закат у Terra Murata"]:::planA
-  Cond1 -- НЕТ --> D1B["План Б: Vico Equense<br/>Якорь<br/>Pizza al Metro"]:::planB
+  Cond1 -- ДА --> D1A["План А: Minori<br/>Buи Minori Boat Service<br/>Вилла Romana / Sal De Riso"]:::planA
+  Cond1 -- НЕТ --> D1B["План Б: Maiori / Cetara<br/>Якорь / буи<br/>Замок / Colatura"]:::planB
 
-  D1A --> Cond2{"Восток Искьи<br/>безопасен?"}:::condition
+  D1A --> Cond2{"Переход 32 мили<br/>погода безопасна?"}:::condition
   D1B --> Cond2
 
-  Cond2 -- ДА --> D2A["День 2 · План А: Baia di Cartaromana<br/>Салют в полночь<br/>Ночной переход → Sant'Angelo"]:::planA
-  Cond2 -- НЕТ --> D2B["День 2 · План Б: Sant'Angelo<br/>Буй/марина напрямую"]:::planB
+  Cond2 -- ДА --> D2A["День 2 · План А: Ischia<br/>Cartaromana → салют в полночь<br/>Ночной переход → Sant'Angelo"]:::planA
+  Cond2 -- НЕТ --> D2_Sci["Scirocco: Остаться на востоке<br/>Укрытие в Salerno / Amalfi<br/>Автобус до Помпеи"]:::scirocco
 
-  D2A --> Cond3{"Scirocco?"}:::condition
-  D2B --> Cond3
+  D2A --> Cond3{"Места в Marina<br/>di Procida?"}:::condition
 
-  Cond3 -- НЕТ --> D3A["День 3: Утро у Maronti<br/>Капри · Faraglioni<br/>Ночь в Nerano"]:::planA
-  Cond3 -- ДА --> D3_Sci["Scirocco: Sorrento North<br/>Marina Piccola · Meta<br/>Лимонная ферма"]:::scirocco
+  Cond3 -- ДА --> D3A["День 3 · План А: Procida (север)<br/>Marina di Procida<br/>Terra Murata / Катакомбы / Corricella"]:::planA
+  Cond3 -- НЕТ --> D3B["День 3 · План Б: Procida (юг)<br/>Буи Chiaiolella<br/>Pozzo Vecchio / Vivara"]:::planB
 
-  D3A --> Cond4{"Scirocco?"}:::condition
+  D3A --> Cond4{"Scirocco<br/>(южный ветер)?"}:::condition
+  D3B --> Cond4
 
-  Cond4 -- НЕТ --> D4A["День 4: Li Galli<br/>Positano · Fornillo<br/>Вилла MAR"]:::planA
-  Cond4 -- ДА --> D3_Sci
+  Cond4 -- НЕТ --> D4A["День 4 · План А: Capri → Nerano<br/>Якорь Faraglioni · Буи Nerano<br/>Spaghetti Maria Grazia / Ieranto"]:::planA
+  Cond4 -- ДА --> D4_Sci["Scirocco Вариант 2: Baia / Pozzuoli<br/>Затонувший Рим (снорклинг 3м)<br/>Амфитеатр Флавиев"]:::scirocco
 
-  D4A --> Cond5{"Места<br/>в Минори?"}:::condition
+  D4A --> Cond5{"Буи Grassi Boat<br/>свободны?"}:::condition
 
-  Cond5 -- ДА --> D5A["День 5: Minori<br/>Паром в Амальфи<br/>Музей бумаги"]:::planA
-  Cond5 -- НЕТ --> D5B["День 5: Maiori<br/>Якорь/марина"]:::planB
+  Cond5 -- ДА --> D5A["День 5 · План А: Li Galli → Positano<br/>Буи Grassi (Fornillo)<br/>Вилла MAR / Купол Assunta"]:::planA
+  Cond5 -- НЕТ --> D5B["День 5 · План Б: Conca dei Marini<br/>Якорь / буи<br/>Grotta dello Smeraldo"]:::planB
 
-  D3_Sci --> D5_Sci["Scirocco: Север Искьи<br/>Casamicciola · Lacco Ameno<br/>Термальный парк"]:::scirocco
-
-  D5A --> Cond6{"Puolo<br/>свободен?"}:::condition
+  D5A --> Cond6{"Scirocco<br/>(южный ветер)?"}:::condition
   D5B --> Cond6
 
-  Cond6 -- ДА --> D6A["День 6: Marina di Puolo<br/>Рыбацкая деревня"]:::planA
-  Cond6 -- НЕТ --> D6B["День 6: Meta di Sorrento<br/>Якорь у пляжа"]:::planB
+  Cond6 -- НЕТ --> Cond7{"Погода<br/>безопасна?"}:::condition
+  Cond6 -- ДА --> D6_Sci["Scirocco Вариант 1: Сорренто<br/>Marina di Puolo / Meta<br/>Regina Giovanna / Agriturismo"]:::scirocco
 
-  D5_Sci --> D6A
+  Cond7 -- ДА --> D6A["День 6 · План А: Amalfi → Cetara<br/>Музей бумаги / Дуомо<br/>Colatura di Alici"]:::planA
+  Cond7 -- НЕТ --> D6B["День 6 · План Б: Vietri sul Mare<br/>Якорь<br/>Столица керамики"]:::planB
 
-  D6A --> D7["День 7 · Пт 31.07<br/>На топливный причал до 14:00!<br/>Castellammare di Stabia"]:::base
+  D4_Sci --> D7["День 7 · Пт 31.07<br/>На топливный причал до 14:00!<br/>Marina d'Arechi (Salerno)"]:::base
+  D6_Sci --> D7
+  D6A --> D7
   D6B --> D7
+  D2_Sci --> D7
   </div>
 </div>
 

@@ -9,7 +9,7 @@ const entries = await getCollection('route');
 const route = entries[0]; // single-file collection
 if (!route) throw new Error('No route entry found in src/content/route/');
 
-const { title, subtitle, dates, boat, crew, rules, days, scirocco_branch } = route.data;
+const { title, subtitle, dates, home_base, boat, crew, rules, days, scirocco_branch } = route.data;
 const base = import.meta.env.BASE_URL;
 ---
 
@@ -50,8 +50,15 @@ const base = import.meta.env.BASE_URL;
 
       <!-- Boat + crew metadata -->
       <div class="mt-4 flex flex-wrap gap-4 text-sm text-[var(--color-muted)]">
-        <span>🚢 <strong class="text-[var(--color-text)]">{boat.name}</strong>
+        {home_base && <span>🏠 <strong class="text-[var(--color-text)]">{home_base}</strong></span>}
+        <span>
+          🚢&nbsp;
+          {boat.link
+            ? <a href={boat.link} target="_blank" rel="noopener noreferrer" class="font-semibold text-[var(--color-sea)] underline">{boat.name}</a>
+            : <strong class="text-[var(--color-text)]">{boat.name}</strong>
+          }
           &nbsp;{boat.length_m}м × {boat.beam_m}м · осадка {boat.draft_m}м
+          {boat.water_tank_l && <>&nbsp;· вода {boat.water_tank_l}л</>}
         </span>
         <span>👥 {crew.adults} взрослых + {crew.children} детей ({crew.children_ages})</span>
         <span>📅 {dates}</span>
@@ -79,7 +86,7 @@ const base = import.meta.env.BASE_URL;
     </div>
 
     <!-- Scirocco branch -->
-    {scirocco_branch.length > 0 && <SciroccoSection days={scirocco_branch} />}
+    {scirocco_branch.length > 0 && <SciroccoSection variants={scirocco_branch} />}
 
   </main>
 </Layout>

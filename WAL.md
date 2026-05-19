@@ -1,6 +1,6 @@
 # Write-Ahead Log {#root}
 
-Last updated: 2026-05-19 | Session: real data, schema v2 (Plan A/B/Scirocco), route diagram
+Last updated: 2026-05-19 | Session: schema v3 (POI + SciroccoVariant), new Salerno-based route, CI fixes
 
 > **SESSION OPEN PROCEDURE**
 >
@@ -12,23 +12,24 @@ Last updated: 2026-05-19 | Session: real data, schema v2 (Plan A/B/Scirocco), ro
 
 ## Current State {#state}
 
-**Overall status**: schema v2 + real data in place; web builds clean; PDF needs fonts; design is functional
+**Overall status**: schema v3 + new route data in place; web builds clean; PDF needs fonts; design is functional
 
 | Area | Status |
 |---|---|
 | Project scaffold | Complete — committed 45915a0 |
 | Astro + Tailwind v4 + TS strict | Complete |
-| Zod schema (`src/schemas/route.ts`) | **Complete v2** — Plan A/B + Scirocco branch + Mooring + Warnings |
-| Route data (`src/content/route/amalfi.md`) | **Complete** — full 7-day YAML frontmatter, real Russian content |
-| Web components | **Complete** — `DaySection` + `PlanCard` (A/B) + `SciroccoSection` + `RouteDiagram` |
-| Route decision diagram | **Complete** — Mermaid web component + standalone `public/route-diagram.html` |
-| PDF generation script | **Updated** — new schema; needs fonts to run |
-| PDF layout (`AmalfiRoutePDF.tsx`) | **Complete** — Cover + Overview table + Day pages + Scirocco page |
-| GitHub Actions deploy workflow | Complete — triggers on push to `main` |
+| Zod schema (`src/schemas/route.ts`) | **Complete v3** — POI, morning_pois, SciroccoVariant, BoatSchema extended, home_base |
+| Route data (`src/content/route/amalfi.md`) | **Complete v3** — Salerno base, 7 days, POI data, 2 Scirocco variants |
+| Web components | **Complete** — PlanCard (POIs), DaySection (morning POIs), SciroccoSection (variants), RouteDiagram (new diagram) |
+| Route decision diagram | **Complete** — RouteDiagram.astro + public/route-diagram.html (both updated to new route) |
+| PDF generation script | Current — no changes needed |
+| PDF layout (`AmalfiRoutePDF.tsx`) | **Updated v3** — POIs in PlanCardPDF, morning_pois in DayPage, SciroccoBranchPage uses SciroccoVariant |
+| GitHub Actions deploy workflow | Complete |
 | Git remote | Configured → `https://github.com/sorokoletovdu/amalfi-route-2026.git` |
 | Fonts (`public/fonts/`) | **Missing** — Inter + Playfair Display TTFs required before PDF builds |
 | Visual polish / final design | **Not started** — functional but unstyled beyond plan colours |
 | Data-fetching script | **Not started** — TripAdvisor + Navily enrichment |
+| pnpm-workspace.yaml | **Deleted** — `onlyBuiltDependencies` moved to `package.json` under `pnpm` key |
 
 ---
 
@@ -39,13 +40,15 @@ Last updated: 2026-05-19 | Session: real data, schema v2 (Plan A/B/Scirocco), ro
   `PlayfairDisplay-Regular.ttf`, `PlayfairDisplay-Bold.ttf`
 - [ ] **Visual polish**: refine typography, spacing, and layout — functional design is in place but
   needs visual polish pass on `src/pages/index.astro` and components
-- [ ] **Data-fetching script**: `scripts/fetch-enrichments.ts` — scrape/query TripAdvisor + Navily for
-  POI ratings, photos, marina data; enrich `amalfi.md` content
-- [x] **Schema v2**: `src/schemas/route.ts` — Plan A/B, Mooring, Warning, Scirocco branch
-- [x] **Real route data**: `src/content/route/amalfi.md` — full 7-day YAML frontmatter
-- [x] **Route diagram**: `RouteDiagram.astro` (Mermaid) + `public/route-diagram.html` (standalone)
-- [x] **New components**: `PlanCard.astro`, `SciroccoSection.astro`, updated `DaySection.astro`
-- [x] **PDF v2**: `AmalfiRoutePDF.tsx` — Cover + Overview decision table + Day pages + Scirocco page
+- [ ] **Data-fetching script**: `scripts/fetch-enrichments.ts` — schema now has `tripadvisor_url` on POIs;
+  scraper can enrich ratings/photos
+- [ ] **Commit**: working tree is dirty — run `git add -A && git commit`
+- [x] **CI fix**: removed `pnpm-workspace.yaml` (caused "packages field missing" error in CI)
+- [x] **PDF duplicate fix**: removed duplicate `AmalfiRoutePDF` export + orphaned JSX in `AmalfiRoutePDF.tsx`
+- [x] **Dead code cleanup**: deleted `AnchoringCard.astro`, `POICard.astro`, prose body from `amalfi.md`
+- [x] **Schema v3**: POISchema, morning_pois, SciroccoVariantSchema, BoatSchema extended, home_base
+- [x] **Route data v3**: new Salerno base, 7-day route, POI data per plan, 2 Scirocco variants
+- [x] **Route diagram**: updated to new route logic in both RouteDiagram.astro and public/route-diagram.html
 
 ---
 
@@ -71,21 +74,29 @@ No open REVIEW items.
 2. **CI font download** in `.github/workflows/deploy.yml` uses a `curl`+`unzip` one-liner that
    may fail depending on the Inter release zip structure. Consider committing TTFs directly or
    using `@fontsource` packages instead.
+3. **Astro "Duplicate id" warning** on `amalfi.md` — benign glob-loader quirk with single-entry
+   collections; does not affect build output.
 
 ---
 
 ## Next Session Must Read {#next}
 
-Schema v2 is live and web builds clean. All real content is in `src/content/route/amalfi.md`.
+Schema v3 and route data v3 are live. Web builds clean. Working tree is uncommitted.
 
 Next priorities:
-1. **Fonts** — add TTFs to `public/fonts/` then run `pnpm generate-pdf` to test the full PDF
-2. **Visual polish** — the functional layout is in place; review it in browser (`pnpm dev`) and
-   refine typography, colours, and spacing in `src/styles/global.css` and components
-3. **Commit** — nothing has been committed since schema/data change; run `git add -A && git commit`
+1. **Commit** — `git add -A && git commit` (schema, data, components, CI fix all uncommitted)
+2. **Fonts** — add TTFs to `public/fonts/` then run `pnpm generate-pdf` to test full PDF pipeline
+3. **Visual polish** — run `pnpm dev`, review in browser, refine in `src/styles/global.css` and components
 
-Key new files this session:
-- `src/components/PlanCard.astro`
-- `src/components/RouteDiagram.astro`
-- `src/components/SciroccoSection.astro`
-- `public/route-diagram.html` (moved from `src/content/route/`)
+Key changed files this session:
+- `src/schemas/route.ts` — v3 schema (POI, morning_pois, SciroccoVariant, BoatSchema, home_base)
+- `src/content/route/amalfi.md` — complete YAML rewrite (Salerno base, new 7-day route)
+- `src/components/PlanCard.astro` — POI list with TripAdvisor links
+- `src/components/DaySection.astro` — morning_pois block
+- `src/components/SciroccoSection.astro` — rewritten for SciroccoVariant schema
+- `src/components/RouteDiagram.astro` — new Mermaid diagram
+- `src/pages/index.astro` — home_base display, boat link, SciroccoSection prop fix
+- `src/pdf/AmalfiRoutePDF.tsx` — POIs in PlanCardPDF/DayPage, SciroccoBranchPage rewritten
+- `public/route-diagram.html` — replaced with updated decision tree
+- `package.json` — `onlyBuiltDependencies` under `pnpm` key (CI fix)
+- Deleted: `pnpm-workspace.yaml`, `src/components/AnchoringCard.astro`, `src/components/POICard.astro`

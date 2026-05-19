@@ -17,11 +17,18 @@ export const WarningSchema = z.object({
   text: z.string(),
 });
 
+export const POISchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  tripadvisor_url: z.string().optional(),
+});
+
 export const PlanSchema = z.object({
   trigger: z.string().optional(),
   destinations: z.array(z.string()),
   mooring: MooringSchema,
   activities: z.array(z.string()).default([]),
+  pois: z.array(POISchema).default([]),
   warnings: z.array(WarningSchema).default([]),
   scirocco_note: z.string().optional(),
 });
@@ -32,24 +39,30 @@ export const DaySchema = z.object({
   title: z.string(),
   departure_time: z.string().optional(),
   notes: z.string().optional(),
+  morning_pois: z.array(POISchema).default([]),
   plan_a: PlanSchema,
   plan_b: PlanSchema.optional(),
 });
 
-export const SciroccoDaySchema = z.object({
-  day_ref: z.string(),
+export const SciroccoVariantSchema = z.object({
   title: z.string(),
-  destination: z.string(),
+  condition: z.string(),
+  shelter: z.string(),
   mooring: MooringSchema,
-  activities: z.array(z.string()).default([]),
-  merges_to: z.string().optional(),
+  pois: z.array(POISchema).default([]),
+  return_notes: z.string().optional(),
 });
 
 export const BoatSchema = z.object({
   name: z.string(),
+  link: z.string().optional(),
   length_m: z.number(),
   beam_m: z.number(),
   draft_m: z.number(),
+  water_tank_l: z.number().optional(),
+  fuel_tank_l: z.number().optional(),
+  ac: z.boolean().optional(),
+  inverter: z.boolean().optional(),
 });
 
 export const CrewSchema = z.object({
@@ -62,20 +75,22 @@ export const RouteSchema = z.object({
   title: z.string(),
   subtitle: z.string().optional(),
   dates: z.string(),
+  home_base: z.string().optional(),
   boat: BoatSchema,
   crew: CrewSchema,
   rules: z.array(z.string()).default([]),
   days: z.array(DaySchema),
-  scirocco_branch: z.array(SciroccoDaySchema).default([]),
+  scirocco_branch: z.array(SciroccoVariantSchema).default([]),
 });
 
 export type MooringType = z.infer<typeof MooringTypeSchema>;
 export type Mooring = z.infer<typeof MooringSchema>;
 export type WarningSeverity = z.infer<typeof WarningSeveritySchema>;
 export type Warning = z.infer<typeof WarningSchema>;
+export type POI = z.infer<typeof POISchema>;
 export type Plan = z.infer<typeof PlanSchema>;
 export type Day = z.infer<typeof DaySchema>;
-export type SciroccoDay = z.infer<typeof SciroccoDaySchema>;
+export type SciroccoVariant = z.infer<typeof SciroccoVariantSchema>;
 export type Boat = z.infer<typeof BoatSchema>;
 export type Crew = z.infer<typeof CrewSchema>;
 export type Route = z.infer<typeof RouteSchema>;

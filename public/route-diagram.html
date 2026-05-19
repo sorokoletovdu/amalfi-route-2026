@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sailing Route Decision Tree v5 (Final with Updated Booking Links)</title>
+    <title>Sailing Route Decision Tree v9 (Final with Boat Specs)</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js"></script>
     <script>
         mermaid.initialize({
@@ -63,7 +63,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Sailing Route Decision Tree (July 25 - Aug 1, 2026)</h1>
+        <h1>Route Decision Tree (Marina d'Arechi Base)</h1>
         
         <div class="legend">
             <div class="legend-item"><div class="color-box green"></div> Plan A (Normal Weather)</div>
@@ -79,45 +79,47 @@
             classDef condition fill:#e2e3e5,stroke:#6c757d,stroke-width:2px,shape:diamond;
             classDef base fill:#cce5ff,stroke:#007bff,stroke-width:2px;
 
-            Start["DAY 1: Sat 25.07<br>Base: Castellammare di Stabia"]:::base --> Cond1{"Checkout<br>before 18:00?"}:::condition
+            Start["DAY 1: Sat 25.07<br>Base: Marina d'Arechi (Salerno)"]:::base --> Cond1{"Checkout<br>before 18:00?"}:::condition
             
-            Cond1 -- YES --> D1A["Plan A: Procida<br>Marina di Procida<br>Sunset at Terra Murata"]:::planA
-            Cond1 -- NO --> D1B["Plan B: Vico Equense<br>Anchor / Buoy<br>Pizza al Metro"]:::planB
+            Cond1 -- YES --> D1A["Plan A: Minori<br>Buoys in Minori<br>Roman Villa / Sal De Riso"]:::planA
+            Cond1 -- NO --> D1B["Plan B: Maiori / Cetara<br>Anchor / Buoy<br>Norman Tower / Castles"]:::planB
 
-            D1A --> Cond2{"Ischia East Coast<br>Safe for Anchor?"}:::condition
+            D1A --> Cond2{"The Long Sail (5.5 hrs)<br>Weather safe?"}:::condition
             D1B --> Cond2
             
-            Cond2 -- YES --> D2A["Plan A: Ischia (Festa di Sant'Anna)<br>Anchor outside safety line<br>Midnight Fireworks<br>Night Sail to Sant'Angelo (2AM)"]:::planA
-            Cond2 -- NO --> D2B["Plan B: Ischia (Sant'Angelo)<br>Marina / Buoy directly<br>Skip fireworks, safe sleep"]:::planB
+            Cond2 -- YES --> D2A["Plan A: Ischia (Festa di Sant'Anna)<br>Anchor Cartaromana -> Fireworks<br>Night Sail to Sant'Angelo (2AM)"]:::planA
+            Cond2 -- NO --> D2_Scirocco["Scirocco Branch: Stay East<br>Hide in Salerno/Amalfi<br>Bus to Pompeii"]:::scirocco
 
-            D2A --> Cond3{"Is Scirocco<br>(South Wind)<br>blowing?"}:::condition
-            D2B --> Cond3
+            D2A --> Cond3{"Are Procida<br>marinas full?"}:::condition
 
-            Cond3 -- NO --> D3A["Plan A: Late Morning in Sant'Angelo<br>Sail to Capri (Faraglioni)<br>Night at Buoys Nerano"]:::planA
-            Cond3 -- YES --> D3_Scirocco["Scirocco Branch: Sorrento North<br>Marina Piccola Sorrento / Meta<br>Hide from South Swell"]:::scirocco
+            Cond3 -- NO --> D3A["Plan A: Sant'Angelo to Procida<br>Marina di Procida<br>Terra Murata / Catacombs"]:::planA
+            Cond3 -- YES --> D3B["Plan B: Procida South<br>Chiaiolella Buoys<br>Vivara Bridge / Pozzo Vecchio"]:::planB
 
-            D3A --> Cond4{"Is Scirocco<br>blowing now?"}:::condition
+            D3A --> Cond4{"Is Scirocco<br>(South Wind)<br>blowing?"}:::condition
+            D3B --> Cond4
+
+            Cond4 -- NO --> D4A["Plan A: Capri to Nerano<br>Anchor Faraglioni, Buoys Nerano<br>Ieranto Hike / Spaghetti"]:::planA
+            Cond4 -- YES --> D4_Scirocco["Scirocco Branch: Gulf of Naples<br>Hide in Baia / Pozzuoli<br>Submerged Roman City / Cages"]:::scirocco
+
+            D4A --> Cond5{"Are Positano buoys<br>available?"}:::condition
             
-            Cond4 -- NO --> D4A["Plan A: Li Galli to Positano<br>Grassi Boat Buoys (Fornillo)<br>Roman Villa & Shopping"]:::planA
-            Cond4 -- YES --> D3_Scirocco
-            
-            D4A --> Cond5{"Are Minori buoys<br>available?"}:::condition
-            
-            Cond5 -- YES --> D5A["Plan A: Minori & Amalfi<br>Buoys in Minori<br>Ferry to Amalfi Paper Museum"]:::planA
-            Cond5 -- NO --> D5B["Plan B: Maiori<br>Anchor / Marina<br>Large Sand Beach"]:::planB
+            Cond5 -- YES --> D5A["Plan A: Li Galli to Positano<br>Grassi Boat Buoys (Fornillo)<br>Roman Villa / Franco's Bar"]:::planA
+            Cond5 -- NO --> D5B["Plan B: Conca dei Marini<br>Anchor / Buoy<br>Emerald Grotto / Tower"]:::planB
 
-            D3_Scirocco --> D5_Scirocco["Scirocco Branch: Ischia North<br>Casamicciola / Lacco Ameno<br>Safe from South Swell"]:::scirocco
-
-            D5A --> Cond6{"Puolo available<br>& safe?"}:::condition
+            D5A --> Cond6{"Is Scirocco<br>(South Wind)<br>blowing?"}:::condition
             D5B --> Cond6
             
-            Cond6 -- YES --> D6A["Plan A: Marina di Puolo<br>Buoy / Anchor<br>Quiet Fishermen Bay"]:::planA
-            Cond6 -- NO --> D6B["Plan B: Vico Equense / Meta<br>Anchor<br>Sandy Beach"]:::planB
+            Cond6 -- NO --> Cond7{"Weather Safe?"}:::condition
+            Cond6 -- YES --> D6_Scirocco["Scirocco Branch: Flee West<br>Hide in Marina di Puolo / Meta<br>Regina Giovanna Baths"]:::scirocco
 
-            D5_Scirocco --> D6A
+            Cond7 -- YES --> D6A["Plan A: Amalfi to Cetara<br>Drop at Amalfi for Museum<br>Cetara Tower & Colatura"]:::planA
+            Cond7 -- NO --> D6B["Plan B: Vietri sul Mare<br>Anchor<br>Ceramics shopping"]:::planB
 
-            D6A --> D7["DAY 7: Fri 31.07<br>Arrive at fuel dock by 14:00!<br>Sleep in Base Marina"]:::base
+            D4_Scirocco --> D7["DAY 7: Fri 31.07<br>Arrive at Arechi fuel dock by 14:00!<br>Sleep in Base"]:::base
+            D6_Scirocco --> D7
+            D6A --> D7
             D6B --> D7
+            D2_Scirocco --> D7
         </div>
     </div>
 </body>

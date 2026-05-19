@@ -35,6 +35,30 @@ const { day } = Astro.props;
     </p>
   )}
 
+  <!-- Morning POIs (pre-departure) -->
+  {day.morning_pois.length > 0 && (
+    <div class="mb-4">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">📍 До выхода</p>
+      <div class="space-y-1.5">
+        {day.morning_pois.map((poi, i) => (
+          <div class="flex gap-2 rounded-md border border-[var(--color-sea-light)] bg-white px-3 py-2 text-sm">
+            <span class="shrink-0 font-bold text-[var(--color-sea-deep)]">{i + 1}.</span>
+            <div class="min-w-0">
+              {poi.tripadvisor_url
+                ? <a href={poi.tripadvisor_url} target="_blank" rel="noopener noreferrer"
+                     class="font-medium text-[var(--color-sea)] underline hover:text-[var(--color-sea-deep)]">
+                    {poi.name} ↗
+                  </a>
+                : <span class="font-medium">{poi.name}</span>
+              }
+              <p class="mt-0.5 text-xs leading-snug text-[var(--color-muted)]">{poi.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
   <!-- Plans -->
   <div class={`grid gap-4 ${day.plan_b ? 'sm:grid-cols-2' : 'grid-cols-1 max-w-xl'}`}>
     <PlanCard plan={day.plan_a} variant="a" />
