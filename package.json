@@ -1,0 +1,28 @@
+{
+  "name": "amalfi-route",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "tsx scripts/generate-pdf.tsx && astro build",
+    "build:web": "astro build",
+    "generate-pdf": "tsx scripts/generate-pdf.tsx",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "astro": "^5.8.0",
+    "gray-matter": "^4.0.3",
+    "react": "^18.3.1",
+    "tailwindcss": "^4.1.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@types/react": "^18.3.12",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}

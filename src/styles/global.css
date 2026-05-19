@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand colours — nautical palette */
+  --color-sea-deep:    #0a4a6e;
+  --color-sea:         #1a6fa0;
+  --color-sea-light:   #a8d5f0;
+  --color-sea-pale:    #e8f5fc;
+  --color-anchor:      #c9a84c;
+  --color-anchor-dark: #9e7b2a;
+  --color-land:        #f5e6c8;
+  --color-sand:        #f0d9a8;
+  --color-text:        #1a1a2e;
+  --color-muted:       #6b7280;
+
+  /* Typography */
+  --font-sans:    'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-mono:    ui-monospace, 'Cascadia Code', monospace;
+}
+
+/* ── Print styles ──────────────────────────────────────────── */
+@page {
+  size: A4;
+  margin: 15mm 15mm 20mm 15mm;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
