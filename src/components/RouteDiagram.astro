@@ -1,0 +1,98 @@
+---
+// Static decision-tree diagram — Mermaid rendered client-side.
+// Full standalone version is also available at /route-diagram.html
+---
+
+<div class="route-diagram mb-10 rounded-xl border border-[var(--color-sea-light)] bg-white p-5 shadow-sm">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <h2 class="font-heading text-xl font-semibold text-[var(--color-sea-deep)]">
+      🗺️ Схема маршрута: дерево решений
+    </h2>
+    <a
+      href="/route-diagram.html"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-xs text-[var(--color-sea)] underline hover:text-[var(--color-sea-deep)]"
+    >
+      Открыть полный экран ↗
+    </a>
+  </div>
+
+  <!-- Legend -->
+  <div class="mb-4 flex flex-wrap gap-4 text-sm">
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block h-3 w-5 rounded border border-[var(--color-plan-a-border)] bg-[var(--color-plan-a)]"></span>
+      <span>План А</span>
+    </span>
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block h-3 w-5 rounded border border-[var(--color-plan-b-border)] bg-[var(--color-plan-b)]"></span>
+      <span>План Б</span>
+    </span>
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block h-3 w-5 rounded border border-[var(--color-scirocco-border)] bg-[var(--color-scirocco)]"></span>
+      <span>Scirocco (южный ветер)</span>
+    </span>
+  </div>
+
+  <!-- Mermaid diagram -->
+  <div class="mermaid overflow-auto text-sm">
+graph TD
+  classDef planA fill:#d4edda,stroke:#28a745,stroke-width:2px;
+  classDef planB fill:#fff3cd,stroke:#ffc107,stroke-width:2px;
+  classDef scirocco fill:#f8d7da,stroke:#dc3545,stroke-width:2px;
+  classDef condition fill:#e2e3e5,stroke:#6c757d,stroke-width:1px;
+  classDef base fill:#cce5ff,stroke:#007bff,stroke-width:2px;
+
+  Start["День 1 · Сб 25.07<br/>База: Castellammare di Stabia"]:::base --> Cond1{"Выход<br/>до 18:00?"}:::condition
+
+  Cond1 -- ДА --> D1A["План А: Procida<br/>Marina di Procida<br/>Закат у Terra Murata"]:::planA
+  Cond1 -- НЕТ --> D1B["План Б: Vico Equense<br/>Якорь<br/>Pizza al Metro"]:::planB
+
+  D1A --> Cond2{"Восток Искьи<br/>безопасен?"}:::condition
+  D1B --> Cond2
+
+  Cond2 -- ДА --> D2A["День 2 · План А: Baia di Cartaromana<br/>Салют в полночь<br/>Ночной переход → Sant'Angelo"]:::planA
+  Cond2 -- НЕТ --> D2B["День 2 · План Б: Sant'Angelo<br/>Буй/марина напрямую"]:::planB
+
+  D2A --> Cond3{"Scirocco?"}:::condition
+  D2B --> Cond3
+
+  Cond3 -- НЕТ --> D3A["День 3: Утро у Maronti<br/>Капри · Faraglioni<br/>Ночь в Nerano"]:::planA
+  Cond3 -- ДА --> D3_Sci["Scirocco: Sorrento North<br/>Marina Piccola · Meta<br/>Лимонная ферма"]:::scirocco
+
+  D3A --> Cond4{"Scirocco?"}:::condition
+
+  Cond4 -- НЕТ --> D4A["День 4: Li Galli<br/>Positano · Fornillo<br/>Вилла MAR"]:::planA
+  Cond4 -- ДА --> D3_Sci
+
+  D4A --> Cond5{"Места<br/>в Минори?"}:::condition
+
+  Cond5 -- ДА --> D5A["День 5: Minori<br/>Паром в Амальфи<br/>Музей бумаги"]:::planA
+  Cond5 -- НЕТ --> D5B["День 5: Maiori<br/>Якорь/марина"]:::planB
+
+  D3_Sci --> D5_Sci["Scirocco: Север Искьи<br/>Casamicciola · Lacco Ameno<br/>Термальный парк"]:::scirocco
+
+  D5A --> Cond6{"Puolo<br/>свободен?"}:::condition
+  D5B --> Cond6
+
+  Cond6 -- ДА --> D6A["День 6: Marina di Puolo<br/>Рыбацкая деревня"]:::planA
+  Cond6 -- НЕТ --> D6B["День 6: Meta di Sorrento<br/>Якорь у пляжа"]:::planB
+
+  D5_Sci --> D6A
+
+  D6A --> D7["День 7 · Пт 31.07<br/>На топливный причал до 14:00!<br/>Castellammare di Stabia"]:::base
+  D6B --> D7
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js';
+    s.onload = function () {
+      // @ts-ignore
+      mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+    };
+    document.head.appendChild(s);
+  })();
+</script>

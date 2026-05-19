@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sailing Route Decision Tree v5 (Final with Updated Booking Links)</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .green { background: #d4edda; border: 1px solid #c3e6cb; }
+        .yellow { background: #fff3cd; border: 1px solid #ffeeba; }
+        .red { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sailing Route Decision Tree (July 25 - Aug 1, 2026)</h1>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="color-box green"></div> Plan A (Normal Weather)</div>
+            <div class="legend-item"><div class="color-box yellow"></div> Plan B (Delays / Full Spots)</div>
+            <div class="legend-item"><div class="color-box red"></div> Scirocco Branch (South Wind Storm)</div>
+        </div>
+
+        <div class="mermaid">
+            graph TD
+            classDef planA fill:#d4edda,stroke:#28a745,stroke-width:2px;
+            classDef planB fill:#fff3cd,stroke:#ffc107,stroke-width:2px;
+            classDef scirocco fill:#f8d7da,stroke:#dc3545,stroke-width:2px;
+            classDef condition fill:#e2e3e5,stroke:#6c757d,stroke-width:2px,shape:diamond;
+            classDef base fill:#cce5ff,stroke:#007bff,stroke-width:2px;
+
+            Start["DAY 1: Sat 25.07<br>Base: Castellammare di Stabia"]:::base --> Cond1{"Checkout<br>before 18:00?"}:::condition
+            
+            Cond1 -- YES --> D1A["Plan A: Procida<br>Marina di Procida<br>Sunset at Terra Murata"]:::planA
+            Cond1 -- NO --> D1B["Plan B: Vico Equense<br>Anchor / Buoy<br>Pizza al Metro"]:::planB
+
+            D1A --> Cond2{"Ischia East Coast<br>Safe for Anchor?"}:::condition
+            D1B --> Cond2
+            
+            Cond2 -- YES --> D2A["Plan A: Ischia (Festa di Sant'Anna)<br>Anchor outside safety line<br>Midnight Fireworks<br>Night Sail to Sant'Angelo (2AM)"]:::planA
+            Cond2 -- NO --> D2B["Plan B: Ischia (Sant'Angelo)<br>Marina / Buoy directly<br>Skip fireworks, safe sleep"]:::planB
+
+            D2A --> Cond3{"Is Scirocco<br>(South Wind)<br>blowing?"}:::condition
+            D2B --> Cond3
+
+            Cond3 -- NO --> D3A["Plan A: Late Morning in Sant'Angelo<br>Sail to Capri (Faraglioni)<br>Night at Buoys Nerano"]:::planA
+            Cond3 -- YES --> D3_Scirocco["Scirocco Branch: Sorrento North<br>Marina Piccola Sorrento / Meta<br>Hide from South Swell"]:::scirocco
+
+            D3A --> Cond4{"Is Scirocco<br>blowing now?"}:::condition
+            
+            Cond4 -- NO --> D4A["Plan A: Li Galli to Positano<br>Grassi Boat Buoys (Fornillo)<br>Roman Villa & Shopping"]:::planA
+            Cond4 -- YES --> D3_Scirocco
+            
+            D4A --> Cond5{"Are Minori buoys<br>available?"}:::condition
+            
+            Cond5 -- YES --> D5A["Plan A: Minori & Amalfi<br>Buoys in Minori<br>Ferry to Amalfi Paper Museum"]:::planA
+            Cond5 -- NO --> D5B["Plan B: Maiori<br>Anchor / Marina<br>Large Sand Beach"]:::planB
+
+            D3_Scirocco --> D5_Scirocco["Scirocco Branch: Ischia North<br>Casamicciola / Lacco Ameno<br>Safe from South Swell"]:::scirocco
+
+            D5A --> Cond6{"Puolo available<br>& safe?"}:::condition
+            D5B --> Cond6
+            
+            Cond6 -- YES --> D6A["Plan A: Marina di Puolo<br>Buoy / Anchor<br>Quiet Fishermen Bay"]:::planA
+            Cond6 -- NO --> D6B["Plan B: Vico Equense / Meta<br>Anchor<br>Sandy Beach"]:::planB
+
+            D5_Scirocco --> D6A
+
+            D6A --> D7["DAY 7: Fri 31.07<br>Arrive at fuel dock by 14:00!<br>Sleep in Base Marina"]:::base
+            D6B --> D7
+        </div>
+    </div>
+</body>
+</html>

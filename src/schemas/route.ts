@@ -1,58 +1,81 @@
 import { z } from 'zod';
 
-export const POITypeSchema = z.enum([
-  'cultural',
-  'beach',
-  'restaurant',
-  'nature',
-  'marina',
-  'viewpoint',
-  'other',
-]);
+export const MooringTypeSchema = z.enum(['marina', 'buoy', 'anchor', 'marina_or_anchor']);
 
-export const POISchema = z.object({
-  name: z.string(),
-  type: POITypeSchema,
-  description: z.string(),
-  rating: z.number().min(0).max(5).optional(),
-  link: z.string().url().optional(),
-});
-
-export const AnchoringSchema = z.object({
-  bay: z.string(),
-  coordinates: z.string(),
-  depth_m: z.string(),
-  shelter: z.string().optional(),
+export const MooringSchema = z.object({
+  type: MooringTypeSchema,
+  name: z.string().optional(),
+  phone: z.string().optional(),
+  booking_urls: z.array(z.string().url()).default([]),
   notes: z.string().optional(),
 });
 
-export const DestinationSchema = z.object({
-  name: z.string(),
-  description: z.string().optional(),
-  coordinates: z.string().optional(),
+export const WarningSeveritySchema = z.enum(['info', 'warning', 'critical']);
+
+export const WarningSchema = z.object({
+  severity: WarningSeveritySchema,
+  text: z.string(),
+});
+
+export const PlanSchema = z.object({
+  trigger: z.string().optional(),
+  destinations: z.array(z.string()),
+  mooring: MooringSchema,
+  activities: z.array(z.string()).default([]),
+  warnings: z.array(WarningSchema).default([]),
+  scirocco_note: z.string().optional(),
 });
 
 export const DaySchema = z.object({
   day: z.number(),
+  date: z.string(),
   title: z.string(),
-  description: z.string().optional(),
-  from: z.string().optional(),
-  to: z.string().optional(),
-  distance_nm: z.number().optional(),
-  destinations: z.array(DestinationSchema).default([]),
-  pois: z.array(POISchema).default([]),
-  anchoring: AnchoringSchema.optional(),
+  departure_time: z.string().optional(),
+  notes: z.string().optional(),
+  plan_a: PlanSchema,
+  plan_b: PlanSchema.optional(),
+});
+
+export const SciroccoDaySchema = z.object({
+  day_ref: z.string(),
+  title: z.string(),
+  destination: z.string(),
+  mooring: MooringSchema,
+  activities: z.array(z.string()).default([]),
+  merges_to: z.string().optional(),
+});
+
+export const BoatSchema = z.object({
+  name: z.string(),
+  length_m: z.number(),
+  beam_m: z.number(),
+  draft_m: z.number(),
+});
+
+export const CrewSchema = z.object({
+  adults: z.number(),
+  children: z.number(),
+  children_ages: z.string().optional(),
 });
 
 export const RouteSchema = z.object({
   title: z.string(),
-  description: z.string().optional(),
+  subtitle: z.string().optional(),
+  dates: z.string(),
+  boat: BoatSchema,
+  crew: CrewSchema,
+  rules: z.array(z.string()).default([]),
   days: z.array(DaySchema),
+  scirocco_branch: z.array(SciroccoDaySchema).default([]),
 });
 
-export type POIType = z.infer<typeof POITypeSchema>;
-export type POI = z.infer<typeof POISchema>;
-export type Anchoring = z.infer<typeof AnchoringSchema>;
-export type Destination = z.infer<typeof DestinationSchema>;
+export type MooringType = z.infer<typeof MooringTypeSchema>;
+export type Mooring = z.infer<typeof MooringSchema>;
+export type WarningSeverity = z.infer<typeof WarningSeveritySchema>;
+export type Warning = z.infer<typeof WarningSchema>;
+export type Plan = z.infer<typeof PlanSchema>;
 export type Day = z.infer<typeof DaySchema>;
+export type SciroccoDay = z.infer<typeof SciroccoDaySchema>;
+export type Boat = z.infer<typeof BoatSchema>;
+export type Crew = z.infer<typeof CrewSchema>;
 export type Route = z.infer<typeof RouteSchema>;

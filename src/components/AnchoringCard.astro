@@ -1,8 +1,7 @@
 ---
-import type { Anchoring } from '../schemas/route';
-
+// Legacy component — not used in current design
 interface Props {
-  anchoring: Anchoring;
+  anchoring: { bay: string; coordinates: string; depth_m: string; shelter?: string; notes?: string };
 }
 
 const { anchoring } = Astro.props;

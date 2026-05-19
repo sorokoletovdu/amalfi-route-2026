@@ -1,0 +1,120 @@
+---
+import type { Plan } from '../schemas/route';
+
+interface Props {
+  plan: Plan;
+  variant: 'a' | 'b';
+}
+
+const { plan, variant } = Astro.props;
+
+const V = {
+  a: {
+    bg:         'bg-[var(--color-plan-a)]',
+    border:     'border-[var(--color-plan-a-border)]',
+    badge:      'bg-[var(--color-plan-a-border)] text-white',
+    triggerClr: 'text-[var(--color-plan-a-text)]',
+    label:      'ПЛАН А',
+  },
+  b: {
+    bg:         'bg-[var(--color-plan-b)]',
+    border:     'border-[var(--color-plan-b-border)]',
+    badge:      'bg-[var(--color-plan-b-border)] text-[var(--color-plan-b-text)]',
+    triggerClr: 'text-[var(--color-plan-b-text)]',
+    label:      'ПЛАН Б',
+  },
+} as const;
+
+const s = V[variant];
+---
+
+<div class={`rounded-xl border-l-4 ${s.border} ${s.bg} p-4`}>
+  <!-- Header row -->
+  <div class="mb-3 flex flex-wrap items-start gap-2">
+    <span class={`shrink-0 rounded px-2 py-0.5 text-xs font-bold ${s.badge}`}>
+      {s.label}
+    </span>
+    {plan.trigger && (
+      <span class={`text-xs italic leading-5 ${s.triggerClr}`}>{plan.trigger}</span>
+    )}
+  </div>
+
+  <!-- Destination chain -->
+  <div class="mb-3 flex flex-wrap items-center gap-1">
+    {plan.destinations.map((dest, i) => (
+      <>
+        <span class="rounded-md bg-white/70 px-2 py-0.5 text-sm font-semibold">{dest}</span>
+        {i < plan.destinations.length - 1 && (
+          <span class="text-[var(--color-muted)] text-xs">→</span>
+        )}
+      </>
+    ))}
+  </div>
+
+  <!-- Mooring block -->
+  <div class="mb-3 rounded-md bg-white/60 px-3 py-2 text-sm">
+    <div class="font-semibold">
+      ⚓ {plan.mooring.name ?? plan.mooring.type}
+      {plan.mooring.phone && (
+        <a href={`tel:${plan.mooring.phone}`} class="ml-2 font-normal text-[var(--color-sea)] underline">
+          {plan.mooring.phone}
+        </a>
+      )}
+    </div>
+    {plan.mooring.notes && (
+      <p class="mt-1 text-xs text-[var(--color-muted)]">{plan.mooring.notes}</p>
+    )}
+    {plan.mooring.booking_urls.length > 0 && (
+      <div class="mt-2 flex flex-wrap gap-1">
+        {plan.mooring.booking_urls.map((url, i) => (
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block rounded border border-[var(--color-sea)] bg-white px-2 py-0.5 text-xs text-[var(--color-sea)] transition-colors hover:bg-[var(--color-sea-pale)]"
+          >
+            {i === 0 ? '📋 Забронировать' : '📋 Navily'}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <!-- Activities -->
+  {plan.activities.length > 0 && (
+    <ul class="mb-2 space-y-1">
+      {plan.activities.map((act) => (
+        <li class="flex gap-2 text-sm leading-snug">
+          <span class="mt-0.5 shrink-0 text-[var(--color-muted)]">·</span>
+          <span>{act}</span>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <!-- Warnings -->
+  {plan.warnings.map((w) => (
+    <div
+      class={`mt-2 flex gap-2 rounded-md px-3 py-2 text-sm leading-snug ${
+        w.severity === 'critical'
+          ? 'bg-red-100 text-red-800'
+          : w.severity === 'warning'
+          ? 'bg-orange-100 text-orange-800'
+          : 'bg-blue-100 text-blue-800'
+      }`}
+    >
+      <span class="shrink-0">
+        {w.severity === 'critical' ? '🚨' : w.severity === 'warning' ? '⚠️' : 'ℹ️'}
+      </span>
+      <span>{w.text}</span>
+    </div>
+  ))}
+
+  <!-- Scirocco note -->
+  {plan.scirocco_note && (
+    <div class="mt-2 flex gap-2 rounded-md border border-[var(--color-scirocco-border)] bg-[var(--color-scirocco)] px-3 py-2 text-sm leading-snug text-[var(--color-scirocco-text)]">
+      <span class="shrink-0">🌪️</span>
+      <span>{plan.scirocco_note}</span>
+    </div>
+  )}
+</div>

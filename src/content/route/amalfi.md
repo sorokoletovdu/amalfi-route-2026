@@ -1,172 +1,338 @@
 ---
-title: "Amalfi Coast Sailing Route"
-description: >
-  A curated sailing guide along the UNESCO-listed Amalfi Coast,
-  covering key destinations, points of interest, and anchoring spots
-  from Salerno to Punta Campanella.
+title: "Капитанский Гид: Амальфи и Неаполитанский залив"
+subtitle: "25.07 – 01.08.2026"
+dates: "2026-07-25/2026-08-01"
+boat:
+  name: "Lagoon 380 S2"
+  length_m: 11.55
+  beam_m: 6.53
+  draft_m: 1.15
+crew:
+  adults: 4
+  children: 4
+  children_ages: "8–11"
+rules:
+  - "Правило 14:00: Шкипер оценивает ветер (Windy) и подтверждает стоянку до 14:00 каждого дня."
+  - "Красная Ветка: При южном ветре (Scirocco) — План А на Амальфи отменяется. Переход на северную сторону полуострова Сорренто."
 days:
   - day: 1
-    title: "Salerno → Cetara"
-    from: "Salerno Marina d'Arechi"
-    to: "Cetara"
-    distance_nm: 14
-    description: >
-      Depart from Salerno Marina d'Arechi in the morning. Head west along
-      the coast past the Punta della Licosa cliffs. Cetara is a tiny
-      anchovy-fishing village with a stunning medieval watchtower.
-    destinations:
-      - name: "Cetara"
-        description: "Medieval fishing village famous for colatura di alici (anchovy sauce)"
-        coordinates: "40°38'57\"N 14°41'51\"E"
-    pois:
-      - name: "Torre di Cetara"
-        type: cultural
-        description: "16th-century Aragonese watchtower overlooking the harbour"
-      - name: "Ristorante Al Convento"
-        type: restaurant
-        description: "Acclaimed restaurant specialising in tuna and anchovy dishes"
-      - name: "Spiaggia di Cetara"
-        type: beach
-        description: "Pebble beach in the centre of the village"
-    anchoring:
-      bay: "Cetara Bay"
-      coordinates: "40°38'50\"N 14°41'55\"E"
-      depth_m: "6-12"
-      shelter: "Good shelter from W/NW; exposed to E/SE swells"
-      notes: >
-        Anchor on the eastern side of the bay clear of the ferry lane.
-        Small pier for dinghies — ask permission before landing.
-
+    date: "2026-07-25"
+    title: "Старт из Castellammare"
+    notes: "Чек-ин 15:00. Одна семья принимает лодку, вторая закупает продукты и 5 пакетов льда. Цель выхода — 17:00, переход 2 часа."
+    plan_a:
+      trigger: "Выход до 18:00"
+      destinations:
+        - "Procida"
+      mooring:
+        type: buoy
+        name: "Marina di Procida (Северная сторона)"
+        booking_urls:
+          - "https://marinedi.com/en/marina-di-procida/#prenota-ora"
+        notes: "Безопасный понтон."
+      activities:
+        - "Пешком 1.2 км к Belvedere Terra Murata — закат на западе (море/Искья) и Везувий на востоке."
+        - "Ужин в рыбацкой гавани Corricella."
+    plan_b:
+      trigger: "Выход позже 18:00"
+      destinations:
+        - "Vico Equense"
+      mooring:
+        type: anchor
+        name: "Vico Equense (Соррентийский полуостров)"
+        notes: "Якорь. 30 минут от базы."
+      activities:
+        - "На тузике на берег."
+        - "Ужин в Università della Pizza — знаменитая 2-метровая Pizza al Metro."
   - day: 2
-    title: "Cetara → Amalfi"
-    from: "Cetara"
-    to: "Amalfi"
-    distance_nm: 9
-    description: >
-      Short passage to the historic town of Amalfi, a major maritime
-      republic in the 9th–11th centuries. Arrive early to secure a
-      mooring buoy or berth in the small marina.
-    destinations:
-      - name: "Amalfi"
-        description: "Historic maritime republic, home to the Cathedral of Sant'Andrea"
-        coordinates: "40°38'03\"N 14°36'08\"E"
-    pois:
-      - name: "Cathedral of Sant'Andrea"
-        type: cultural
-        description: >
-          9th-century cathedral with Arab-Norman architecture and a striking
-          black-and-white striped façade
-        rating: 5
-      - name: "Valle delle Ferriere"
-        type: nature
-        description: "Hiking trail through a lush gorge with ancient paper mills"
-      - name: "Pasticceria Pansa"
-        type: restaurant
-        description: "Historic café on Piazza del Duomo, famed for sfogliatelle and lemon cake"
-      - name: "Grotta dello Smeraldo"
-        type: nature
-        description: "Sea cave with emerald-green illuminated waters, accessible by boat"
-        rating: 4.5
-    anchoring:
-      bay: "Amalfi Roadstead"
-      coordinates: "40°37'55\"N 14°36'00\"E"
-      depth_m: "8-20"
-      shelter: "Fair; exposed to southerly winds and swell"
-      notes: >
-        Mooring buoys available from the harbour master (VHF 16).
-        A dedicated dinghy dock is located east of the main pier.
-        The town quay is for ferries only.
-
+    date: "2026-07-26"
+    title: "Festa di Sant'Anna — Искья"
+    departure_time: "10:00"
+    notes: "Внимание: остров Vivara — строгая Зона А, транзит запрещён."
+    plan_a:
+      trigger: "Восточный берег Искьи безопасен для якоря"
+      destinations:
+        - "Baia di Cartaromana"
+        - "Sant'Angelo"
+      mooring:
+        type: buoy
+        name: "Sant'Angelo (буи или марина)"
+        phone: "+39 081 999 439"
+        notes: "Связаться с мариной днём, оплатить место и попросить светящийся маркер — ночью швартовщиков не будет. Резерв: глубокий якорь на песке перед пляжем Maronti (вне зоны посидонии)."
+      activities:
+        - "Прибытие к Арагонскому замку. Якорь на внешнем рейде, строго за линией жёлтых буйков."
+        - "Купание, подготовка к вечеру."
+        - "Парад лодок, имитация пожара в замке, грандиозный салют в полночь."
+        - "Ночной переход: выждать 30–40 минут после салюта, затем 40–50 мин на юг Искьи."
+      warnings:
+        - severity: critical
+          text: "Ночной переход в ~02:00. Выждать 30–40 мин после салюта — пьяные капитаны на воде."
+    plan_b:
+      trigger: "Береговая охрана закрывает рейд или сильный восточный ветер"
+      destinations:
+        - "Sant'Angelo"
+      mooring:
+        type: buoy
+        name: "Sant'Angelo"
+      activities:
+        - "Идём днём сразу на юг. Спокойный ужин."
+        - "Салют виден как зарево за горой."
   - day: 3
-    title: "Amalfi → Positano"
-    from: "Amalfi"
-    to: "Positano"
-    distance_nm: 8
-    description: >
-      Sail west past the dramatic Vettica Minore cliffs and Li Galli islets.
-      Positano is arguably the most photogenic town on the coast — pastel
-      houses stacked up steep terraced hillsides.
-    destinations:
-      - name: "Positano"
-        description: "Iconic cliffside village with colourful houses and designer boutiques"
-        coordinates: "40°37'38\"N 14°29'02\"E"
-      - name: "Li Galli Islets"
-        description: "Three small islands said to be home to the Sirens of Greek mythology"
-        coordinates: "40°34'00\"N 14°26'00\"E"
-    pois:
-      - name: "Church of Santa Maria Assunta"
-        type: cultural
-        description: "Famous for its majolica-tiled dome with a 13th-century Byzantine icon"
-        rating: 4.5
-      - name: "Spiaggia Grande"
-        type: beach
-        description: "Main beach, lined with colourful umbrellas and beach clubs"
-      - name: "La Zagara"
-        type: restaurant
-        description: "Garden café known for its pastries and lemon granita"
-      - name: "Path of the Gods (Sentiero degli Dei)"
-        type: nature
-        description: "Legendary clifftop hiking trail with panoramic coastal views"
-        rating: 5
-    anchoring:
-      bay: "Positano Bay"
-      coordinates: "40°37'30\"N 14°29'00\"E"
-      depth_m: "8-15"
-      shelter: "Good shelter from NW winds; exposed to S/SW"
-      notes: >
-        Anchor to the west of the main beach in 8–12 m over sand and weed.
-        Water taxi service runs to the beach landing.
-
+    date: "2026-07-27"
+    title: "Ленивое утро и Капри"
+    departure_time: "11:30"
+    notes: "Поздний завтрак на якоре у пляжа Maronti. Купание с лодки. Тузик в Sant'Angelo за кофе/джелато. Переход на Капри ≈ 2.5 часа."
+    plan_a:
+      trigger: "Нормальная погода, Scirocco отсутствует"
+      destinations:
+        - "Capri (Faraglioni)"
+        - "Nerano"
+      mooring:
+        type: buoy
+        name: "Marina del Nerano"
+        booking_urls:
+          - "https://www.marinadinerano.com/en/book-mooring/"
+      activities:
+        - "Capri: прибытие к 14:30, якорь у скал Faraglioni, купание, фото. Уход в 17:30."
+        - "Nerano: ужин — Spaghetti alla Nerano на галечном пляже."
+      scirocco_note: "Если здесь застал шторм Scirocco — активировать КРАСНУЮ ВЕТКУ."
   - day: 4
-    title: "Positano → Punta Campanella (day sail)"
-    from: "Positano"
-    to: "Marina del Cantone"
-    distance_nm: 11
-    description: >
-      Round the spectacular Punta Campanella headland — the tip of the
-      Sorrentine Peninsula — and drop anchor in the crystal-clear waters
-      of Cala di Mitigliano or continue to Marina del Cantone.
-    destinations:
-      - name: "Punta Campanella"
-        description: "Southernmost tip of the Sorrentine Peninsula, marine protected area"
-        coordinates: "40°33'48\"N 14°21'54\"E"
-      - name: "Marina del Cantone"
-        description: "Quiet bay backed by the village of Nerano, famous for spaghetti alle zucchine"
-        coordinates: "40°34'48\"N 14°22'40\"E"
-    pois:
-      - name: "Torre di Punta Campanella"
-        type: cultural
-        description: "Aragonese watchtower at the headland tip with views to Capri"
-        rating: 4
-      - name: "Ristorante Taverna del Capitano"
-        type: restaurant
-        description: "Michelin-starred restaurant in Marina del Cantone — book ahead"
-        rating: 5
-      - name: "Cala di Mitigliano"
-        type: beach
-        description: "Secluded pebbly cove inside the marine protected area"
-        rating: 5
-      - name: "Punta Campanella Marine Reserve"
-        type: nature
-        description: >
-          Protected marine area with exceptional snorkelling and diving; anchoring
-          restricted to designated zones
-        rating: 4.5
-    anchoring:
-      bay: "Marina del Cantone"
-      coordinates: "40°34'45\"N 14°22'38\"E"
-      depth_m: "4-10"
-      shelter: "Excellent shelter in all but S/SE winds"
-      notes: >
-        Mooring buoys available in summer (fee). If anchoring, stay clear of
-        the protected zone boundary marked by yellow buoys. Dinghy landing
-        on the beach. No-anchor zone applies inside the marine reserve.
+    date: "2026-07-28"
+    title: "Острова Сирен и Позитано"
+    departure_time: "10:30"
+    plan_a:
+      trigger: "Амальфи открыт, Scirocco отсутствует"
+      destinations:
+        - "Li Galli"
+        - "Positano"
+      mooring:
+        type: buoy
+        name: "Grassi Boat Positano (бухта Fornillo)"
+        booking_urls:
+          - "https://www.grassiboatpositano.com/en/service?code=SMAZS"
+        notes: "Тише главного пирса Позитано."
+      activities:
+        - "Li Galli: Зона C заповедника. Якорь строго на песок. Купание в кристальной воде («дом сирен»)."
+        - "Positano: водное такси. Прогулка по улицам-лестницам, шопинг."
+        - "Посещение римской виллы MAR под церковью."
+  - day: 5
+    date: "2026-07-29"
+    title: "Минори и хак со шкипером"
+    departure_time: "09:00"
+    notes: "Переход 1 час."
+    plan_a:
+      trigger: "Есть места в Минори"
+      destinations:
+        - "Minori"
+      mooring:
+        type: buoy
+        name: "Marina Minori Boat Service"
+        booking_urls:
+          - "https://www.boatservice.org/en/book-mooring/"
+          - "https://www.navily.com/port/boat-service-minori-campo-boe/8773"
+        notes: "Лодка привязана, баки заправляются водой."
+      activities:
+        - "Весь экипаж со шкипером на паром Travelmar (€3, 10 мин) → Амальфи."
+        - "Дети: Музей бумаги."
+        - "Возврат на пароме в Минори к десертам в Sal De Riso."
+    plan_b:
+      trigger: "В Минори нет мест"
+      destinations:
+        - "Maiori"
+      mooring:
+        type: marina_or_anchor
+        name: "Maiori"
+        notes: "Самый большой песчаный пляж на побережье."
+      activities:
+        - "Логистика с паромом/автобусом до Амальфи сохраняется."
+  - day: 6
+    date: "2026-07-30"
+    title: "Фьорд и рыбацкая бухта"
+    departure_time: "10:00"
+    notes: "Проход мимо ущелья с мостом Fiordo di Furore — фото с воды."
+    plan_a:
+      trigger: "Puolo свободен и безопасен"
+      destinations:
+        - "Marina di Puolo"
+      mooring:
+        type: marina_or_anchor
+        name: "Marina di Puolo (кооператив)"
+        phone: "+39 081 533 9797"
+        notes: "Аутентичная старая рыбацкая деревня на севере Сорренто."
+      activities:
+        - "Спокойное прощание с морем в аутентичной рыбацкой деревне."
+      warnings:
+        - severity: warning
+          text: "Сбросить чёрные воды за 3 мили до захода в залив Puolo."
+    plan_b:
+      trigger: "В Puolo нет мест"
+      destinations:
+        - "Meta di Sorrento"
+      mooring:
+        type: anchor
+        name: "Meta di Sorrento"
+        notes: "Якорь в песке перед длинным пляжем."
+      activities: []
+  - day: 7
+    date: "2026-07-31"
+    title: "Возвращение домой"
+    departure_time: "10:00"
+    notes: "Купание в заливе по пути. Чек-аут 01.08 в 08:30."
+    plan_a:
+      destinations:
+        - "Castellammare di Stabia"
+      mooring:
+        type: marina
+        name: "Домашнее место в базовой марине"
+      activities:
+        - "Купание в заливе."
+        - "Заправка топливом на причале в Castellammare."
+      warnings:
+        - severity: critical
+          text: "Строго быть на топливном причале до 14:00! В 17:00 там 3-часовая пробка."
+scirocco_branch:
+  - day_ref: "3/4"
+    title: "Побег от шторма — Побережье Сорренто"
+    destination: "Sorrento"
+    mooring:
+      type: marina_or_anchor
+      name: "Porto Turistico Sorrento (Marina Piccola) или якорь у Meta di Sorrento"
+    activities:
+      - "Сухопутный опыт. Такси до Agriturismo (лимонная ферма) в холмах Сорренто."
+      - "Дети готовят пиццу, взрослые дегустируют лимончелло."
+  - day_ref: "5"
+    title: "Смена дислокации — Север Искьи"
+    destination: "Ischia North"
+    mooring:
+      type: marina
+      name: "Casamicciola или Lacco Ameno"
+      notes: "Закрыто горой Эпомео от южного ветра."
+    activities:
+      - "Безопасные набережные."
+      - "Термальный парк Castiglione (разрешён для детей)."
+  - day_ref: "6"
+    title: "Слияние с маршрутом — Возврат"
+    destination: "Marina di Puolo"
+    mooring:
+      type: marina_or_anchor
+      name: "Marina di Puolo"
+    activities:
+      - "Переход 1.5–2 часа обратно к Marina di Puolo."
+    merges_to: "День 6, План А"
 ---
 
-This guide covers the classic southbound passage along the Amalfi Coast, one of the
-most rewarding coastal sailing itineraries in the Mediterranean. Always check local
-weather forecasts — afternoon sea breezes (up to Force 4–5) are common in summer,
-and northerly gales (_tramontana_) can arrive with little warning in spring and autumn.
+# 🇮🇹 Капитанский Гид: Амальфи и Неаполитанский залив (25.07 – 01.08.2026)
 
-Distances are approximate and assume a direct course. Allow extra time for sightseeing,
-customs formalities (if entering from outside the EU), and seeking shelter.
+**Вводные данные (System Requirements):**
+*   **Яхта:** Катамаран Lagoon 380 S2 (Длина: 11.55м, Ширина: 6.53м, Осадка: 1.15м).
+*   **Экипаж:** 4 взрослых, 4 детей (возраст 8–11 лет).
+*   **Правило 14:00:** Шкипер обязан оценивать ветер (Windy) и подтверждать стоянку до 14:00 каждого дня.
+*   **Красная Ветка:** Если дует южный ветер (Scirocco), План А на побережье Амальфи отменяется полностью, маршрут переходит на защищенную северную сторону полуострова Сорренто.
+
+---
+
+### 🗓️ День 1: Суббота, 25.07 | Старт из Castellammare
+*   **Чек-ин:** 15:00. Одна семья принимает лодку, вторая закупает продукты и 5 пакетов льда.
+*   **Выход:** Цель — 17:00. Переход 2 часа.
+
+#### 🟢 План А (Выход до 18:00) ➡️ Procida (Марина)
+*   **Как стоять:** **Marina di Procida** (Северная сторона). Безопасный понтон.
+*   **Бронирование:** [Прямое бронирование Marina di Procida](https://marinedi.com/en/marina-di-procida/#prenota-ora)
+*   **Что делать:** Оставляете лодку, идете пешком 1.2 км к *Belvedere Terra Murata*. Смотрите на запад (море/Искью), где садится солнце, и на восток, где Везувий окрашивается закатным светом. Ужин в рыбацкой гавани Corricella внизу.
+
+#### 🟡 План Б (Выход позже 18:00) ➡️ Vico Equense
+*   **Как стоять:** Якорь у **Vico Equense** (Соррентийский полуостров, 30 мин от базы).
+*   **Что делать:** На тузике на берег. Идете в ресторан "Università della Pizza" за знаменитой 2-метровой *Pizza al Metro*.
+
+---
+
+### 🗓️ День 2: Воскресенье, 26.07 | Festa di Sant'Anna
+*   **Выход:** 10:00. Внимание: остров Vivara — строгая Зона А, транзит запрещен.
+
+#### 🟢 План А (Сценарий Праздника) ➡️ Baia di Cartaromana ➡️ Ночь в Sant'Angelo
+*   **Днем (Baia di Cartaromana):** Приходите к Арагонскому замку. Встаете на якорь на внешнем рейде, строго за линией желтых буйков береговой охраны. Купание, подготовка к вечеру.
+*   **Вечер/Ночь (Шоу):** Парад лодок, имитация пожара в замке и грандиозный салют в полночь.
+*   **Ночной переход (КРИТИЧНО):** После салюта ждете 30-40 минут, пока разъедутся пьяные капитаны местных лодок. Затем переход в темноте (40-50 мин) на юг Искьи.
+*   **Ночевка (02:00):** **Sant'Angelo**. Шкипер должен **днем** связаться с мариной или оператором буев в Sant'Angelo (+39 081 999 439), оплатить место и попросить повесить светящийся маркер, так как ночью швартовщиков не будет. *Резерв: Глубокий якорь в песке перед пляжем Maronti (строго вне зоны посидонии).*
+
+#### 🟡 План Б (Шторм или Запрет) ➡️ Сразу в Sant'Angelo
+*   *Триггер:* Береговая охрана закрывает рейд для частников, или дует сильный восточный ветер.
+*   *Действие:* Отменяем шоу с воды. Идем днем сразу на юг в **Sant'Angelo**. Спокойный ужин, салют видим как зарево за горой.
+
+---
+
+### 🗓️ День 3: Понедельник, 27.07 | Ленивое утро и Капри
+*   **Утро:** Поздний завтрак на якоре у пляжа Maronti. Купание с лодки (никто никуда не спешит). Поездка на тузике в Sant'Angelo за кофе/джелато. 
+*   **Выход:** 11:30 - 12:00. Переход на Капри (около 2.5 часов) с потрясающим видом острова по курсу.
+
+#### 🟢 План А (Нормальная погода) ➡️ Capri ➡️ Nerano
+*   **Днем (Capri):** Прибытие к 14:30. Якорь у скал *Faraglioni*. Обед, купание, фото. Уход в 17:30.
+*   **Ночь (Nerano):** Переход 40 мин. Буи **Marina del Nerano**.
+*   **Бронирование:** [Бронь буев Marina del Cantone (Nerano)](https://www.marinadinerano.com/en/book-mooring/)
+*   **Что делать:** Ужин *Spaghetti alla Nerano* на галечном пляже. 
+
+*(Если здесь вас застал шторм Scirocco, переходите к КРАСНОЙ ВЕТКЕ ниже 👇)*
+
+---
+
+### 🗓️ День 4: Вторник, 28.07 | Острова Сирен и Позитано
+*   **Выход:** 10:30.
+
+#### 🟢 План А (Амальфи открыт) ➡️ Li Galli ➡️ Positano
+*   **Днем (Li Galli):** Зона C заповедника. Якорь строго на песок. Купание в кристальной воде ("доме сирен").
+*   **Ночь (Positano):** Буи **Grassi Boat Positano** в соседней бухте Fornillo Beach. Тише главного пирса.
+*   **Бронирование:** [Бронь буев Grassi Boat (Positano)](https://www.grassiboatpositano.com/en/service?code=SMAZS)
+*   **Что делать:** Водное такси в Позитано. Прогулка по улицам-лестницам, шопинг, посещение римской виллы MAR под церковью.
+
+---
+
+### 🗓️ День 5: Среда, 29.07 | Минори и Хак со Шкипером
+*   **Выход:** 09:00. Переход 1 час.
+
+#### 🟢 План А ➡️ Minori + Amalfi
+*   **Логистика:** Бросать лодку в Амальфи на якоре без шкипера нельзя. Идем в **Minori**.
+*   **Как стоять:** Буи **Marina Minori Boat Service**. Лодка привязана, баки заправляются водой.
+*   **Бронирование (Официальный сайт):** [Бронь Minori Boat Service](https://www.boatservice.org/en/book-mooring/)
+*   **Бронирование (Navily):** [Бронь Minori через Navily](https://www.navily.com/port/boat-service-minori-campo-boe/8773)
+*   **Что делать:** Весь экипаж со шкипером садится на паром *Travelmar* (€3, 10 мин) и плывет в Амальфи. Дети посещают Музей бумаги. Возврат на пароме в Минори к десертам в *Sal De Riso*.
+
+#### 🟡 План Б (В Минори нет мест) ➡️ Maiori
+*   **Как стоять:** Якорь или марина в **Maiori**. (Там самый большой песчаный пляж на побережье).
+*   **Что делать:** Логистика с паромом/автобусом до Амальфи сохраняется.
+
+---
+
+### 🗓️ День 6: Четверг, 30.07 | Фьорд и Рыбацкая Бухта
+*   **Выход:** 10:00. Проход мимо ущелья с мостом **Fiordo di Furore** (фото с воды).
+
+#### 🟢 План А ➡️ Marina di Puolo
+*   **Как стоять:** Якорь или буи кооператива в **Marina di Puolo** (+39 081 533 9797).
+*   **Что делать:** Аутентичная старая рыбацкая деревня на севере Сорренто. Идеально для спокойного прощания с морем. *(Не забудьте сбросить черные воды в 3 милях до захода в залив).*
+
+#### 🟡 План Б (В Puolo нет мест) ➡️ Meta di Sorrento
+*   **Как стоять:** Якорь в песке перед длинным пляжем Meta.
+
+---
+
+### 🗓️ Дни 7-8: Пятница 31.07 - Суббота 01.08 | Финиш
+*   **Пятница 10:00:** Выход. Купание в заливе.
+*   **Пятница 14:00 (КРИТИЧНО):** Строго быть на топливном причале в **Castellammare di Stabia**. В 17:00 там будет 3-часовая пробка. Швартовка на домашнее место.
+*   **Суббота 08:30:** Чек-аут и высадка.
+
+---
+---
+
+### 🚨 КРАСНАЯ ВЕТКА (SCIROCCO ESCAPE ROUTE)
+*Если дует сильный южный ветер, побережье Амальфи и юг Искьи становятся опасными. Активируется этот сценарий.*
+
+#### 🌪️ День 3/4 (Побег от шторма) ➡️ Sorrento Coast
+*   **Что происходит:** Вместо перехода на юг, делаете прыжок (1.5 часа) под защиту гор Сорренто.
+*   **Как стоять:** **Porto Turistico Sorrento (Marina Piccola)** или якорь в **Meta di Sorrento**.
+*   **Что делать:** Сухопутный опыт. Берете такси до *Agriturismo* (лимонной фермы) в холмах Сорренто. Дети готовят пиццу, взрослые дегустируют лимончелло.
+
+#### 🌪️ День 5 (Смена дислокации) ➡️ Ischia North (Север Искьи)
+*   **Что происходит:** Попутный ветер в спину. Переход около 2 часов.
+*   **Как стоять:** Марина в **Casamicciola** или **Lacco Ameno** (Северная Искья закрыта горой Эпомео от южного ветра).
+*   **Что делать:** Безопасные набережные. Можно посетить Термальный парк *Castiglione* (разрешен для детей).
+
+#### 🌪️ День 6 (Слияние с маршрутом) ➡️ Возврат на Сорренто
+*   **Что происходит:** Переход (1.5 - 2 часа) обратно к **Marina di Puolo**. (Возврат к Плану А Дня 6).

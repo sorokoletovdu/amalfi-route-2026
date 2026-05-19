@@ -1,7 +1,6 @@
 ---
 import type { Day } from '../schemas/route';
-import POICard from './POICard.astro';
-import AnchoringCard from './AnchoringCard.astro';
+import PlanCard from './PlanCard.astro';
 
 interface Props {
   day: Day;
@@ -10,68 +9,37 @@ interface Props {
 const { day } = Astro.props;
 ---
 
-<section class="page-break avoid-break">
+<section class="page-break avoid-break mb-12">
   <!-- Day header -->
   <div class="mb-4 border-b-2 border-[var(--color-sea)] pb-3">
     <div class="flex flex-wrap items-baseline gap-3">
-      <span
-        class="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-sea)] text-sm font-bold text-white"
-      >
+      <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-sea)] text-sm font-bold text-white">
         {day.day}
       </span>
-      <h2 class="font-heading text-2xl font-semibold">{day.title}</h2>
+      <div>
+        <h2 class="font-heading text-2xl font-semibold">{day.title}</h2>
+        <span class="text-sm text-[var(--color-muted)]">{day.date}</span>
+      </div>
     </div>
-
-    {(day.from || day.to || day.distance_nm) && (
-      <div class="mt-2 flex flex-wrap gap-4 text-sm text-[var(--color-muted)]">
-        {day.from && <span>From: <strong class="text-[var(--color-text)]">{day.from}</strong></span>}
-        {day.to   && <span>To: <strong class="text-[var(--color-text)]">{day.to}</strong></span>}
-        {day.distance_nm && <span>≈ <strong class="text-[var(--color-text)]">{day.distance_nm} nm</strong></span>}
+    {day.departure_time && (
+      <div class="mt-2 text-sm text-[var(--color-muted)]">
+        Выход: <strong class="text-[var(--color-text)]">{day.departure_time}</strong>
       </div>
     )}
   </div>
 
-  <!-- Description -->
-  {day.description && (
-    <p class="mb-4 leading-relaxed text-[var(--color-text)]">{day.description}</p>
+  <!-- Day notes -->
+  {day.notes && (
+    <p class="mb-4 rounded-lg bg-[var(--color-sea-pale)] px-4 py-3 text-sm leading-relaxed text-[var(--color-text)]">
+      {day.notes}
+    </p>
   )}
 
-  <!-- Destinations -->
-  {day.destinations.length > 0 && (
-    <div class="mb-4">
-      <h3 class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-sea)]">
-        Destinations
-      </h3>
-      <ul class="space-y-1">
-        {day.destinations.map((dest) => (
-          <li class="text-sm">
-            <strong>{dest.name}</strong>
-            {dest.coordinates && (
-              <span class="ml-2 font-mono text-xs text-[var(--color-muted)]">
-                {dest.coordinates}
-              </span>
-            )}
-            {dest.description && (
-              <span class="text-[var(--color-muted)]"> — {dest.description}</span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+  <!-- Plans -->
+  <div class={`grid gap-4 ${day.plan_b ? 'sm:grid-cols-2' : 'grid-cols-1 max-w-xl'}`}>
+    <PlanCard plan={day.plan_a} variant="a" />
+    {day.plan_b && <PlanCard plan={day.plan_b} variant="b" />}
+  </div>
   )}
 
-  <!-- Points of Interest -->
-  {day.pois.length > 0 && (
-    <div class="mb-4">
-      <h3 class="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-sea)]">
-        Points of Interest
-      </h3>
-      <div class="grid gap-2 sm:grid-cols-2">
-        {day.pois.map((poi) => <POICard poi={poi} />)}
-      </div>
-    </div>
-  )}
-
-  <!-- Anchoring -->
-  {day.anchoring && <AnchoringCard anchoring={day.anchoring} />}
 </section>

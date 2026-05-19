@@ -6,20 +6,36 @@ import {
   View,
   StyleSheet,
 } from '@react-pdf/renderer';
-import type { Route, Day, POI, Anchoring } from '../schemas/route';
+import type { Route, Day, Plan, SciroccoDay } from '../schemas/route';
 
 // ── Palette (mirrors global.css) ────────────────────────────
 const C = {
-  seaDeep:   '#0a4a6e',
-  sea:       '#1a6fa0',
-  seaPale:   '#e8f5fc',
-  anchor:    '#c9a84c',
-  anchorDk:  '#9e7b2a',
-  land:      '#f5e6c8',
-  muted:     '#6b7280',
-  border:    '#e5e7eb',
-  white:     '#ffffff',
-  text:      '#1a1a2e',
+  seaDeep:        '#0a4a6e',
+  sea:            '#1a6fa0',
+  seaPale:        '#e8f5fc',
+  seaLight:       '#a8d5f0',
+  muted:          '#6b7280',
+  border:         '#e5e7eb',
+  white:          '#ffffff',
+  text:           '#1a1a2e',
+  // Plans
+  planA:          '#d4edda',
+  planABorder:    '#28a745',
+  planAText:      '#155724',
+  planB:          '#fff3cd',
+  planBBorder:    '#ffc107',
+  planBText:      '#664d03',
+  scirocco:       '#f8d7da',
+  sciroccoBorder: '#dc3545',
+  sciroccoText:   '#721c24',
+  // Warnings
+  warnCrit:       '#fee2e2',
+  warnCritText:   '#991b1b',
+  warnWarn:       '#fef3c7',
+  warnWarnText:   '#92400e',
+  // Base nodes (diagram)
+  base:           '#cce5ff',
+  baseBorder:     '#0066cc',
 };
 
 const styles = StyleSheet.create({
@@ -31,7 +47,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     paddingHorizontal: 25,
   },
-  // Cover
+  // ── Cover ───────────────────────────────────────────────
   coverPage: {
     backgroundColor: C.seaPale,
     justifyContent: 'center',
@@ -39,24 +55,45 @@ const styles = StyleSheet.create({
   },
   coverTitle: {
     fontFamily: 'Playfair',
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 700,
     color: C.seaDeep,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 6,
   },
   coverSubtitle: {
-    fontSize: 11,
-    color: C.muted,
+    fontSize: 13,
+    color: C.sea,
     textAlign: 'center',
-    maxWidth: 320,
+    marginBottom: 16,
   },
-  coverMeta: {
+  coverMetaRow: {
+    flexDirection: 'row',
+    gap: 20,
+    marginTop: 6,
+  },
+  coverMetaItem: {
     fontSize: 9,
     color: C.muted,
-    marginTop: 8,
+    textAlign: 'center',
   },
-  // Day header
+  coverMetaValue: {
+    fontWeight: 600,
+    color: C.text,
+  },
+  coverRules: {
+    marginTop: 20,
+    borderTop: `1px solid ${C.seaLight}`,
+    paddingTop: 12,
+    maxWidth: 380,
+  },
+  coverRule: {
+    fontSize: 8,
+    color: C.text,
+    lineHeight: 1.5,
+    marginBottom: 4,
+  },
+  // ── Day header ──────────────────────────────────────────
   dayHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -84,119 +121,234 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     color: C.seaDeep,
   },
+  dayDate: {
+    fontSize: 8,
+    color: C.muted,
+    marginTop: 1,
+  },
   dayMeta: {
-    flexDirection: 'row',
-    gap: 16,
+    fontSize: 8,
+    color: C.muted,
     marginBottom: 6,
   },
-  dayMetaItem: {
-    fontSize: 8,
-    color: C.muted,
-  },
-  dayMetaValue: {
-    color: C.text,
-    fontWeight: 600,
-  },
-  description: {
-    fontSize: 9,
+  dayNotes: {
+    fontSize: 8.5,
     lineHeight: 1.5,
+    backgroundColor: C.seaPale,
+    borderRadius: 4,
+    padding: 6,
     marginBottom: 8,
   },
-  // Section label
-  sectionLabel: {
-    fontSize: 7,
+  // ── Plan cards ──────────────────────────────────────────
+  plansRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 6,
+  },
+  planCard: {
+    flex: 1,
+    borderRadius: 5,
+    padding: 7,
+  },
+  planBadge: {
+    fontSize: 6.5,
     fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    color: C.sea,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 3,
+    alignSelf: 'flex-start',
     marginBottom: 4,
   },
-  // Destinations
-  destRow: {
+  planTrigger: {
+    fontSize: 7.5,
+    fontStyle: 'italic',
+    marginBottom: 4,
+  },
+  planDests: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 4,
-    marginBottom: 8,
+    gap: 3,
+    marginBottom: 5,
   },
-  destItem: {
+  planDestBadge: {
     fontSize: 8,
-    marginRight: 8,
+    fontWeight: 600,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderRadius: 3,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
   },
-  destCoord: {
-    fontFamily: 'Courier',
+  planDestArrow: {
     fontSize: 7,
     color: C.muted,
+    alignSelf: 'center',
   },
-  // POI grid
-  poiGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 5,
-    marginBottom: 8,
-  },
-  poiCard: {
-    width: '48%',
-    border: `1px solid ${C.border}`,
-    borderRadius: 4,
+  mooringBox: {
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    borderRadius: 3,
     padding: 5,
-    backgroundColor: C.white,
+    marginBottom: 5,
   },
-  poiName: {
+  mooringName: {
     fontSize: 8,
     fontWeight: 600,
     marginBottom: 2,
   },
-  poiDesc: {
+  mooringPhone: {
+    fontSize: 7.5,
+    color: C.sea,
+  },
+  mooringNote: {
     fontSize: 7.5,
     color: C.muted,
     lineHeight: 1.4,
-  },
-  poiRating: {
-    fontSize: 7,
-    color: C.anchorDk,
     marginTop: 2,
   },
-  // Anchoring
-  anchorBox: {
-    backgroundColor: C.land,
-    borderLeft: `4px solid ${C.anchor}`,
-    borderRadius: 4,
-    padding: 8,
+  activityItem: {
+    fontSize: 8,
+    lineHeight: 1.4,
+    marginBottom: 2,
+  },
+  warningBox: {
+    flexDirection: 'row',
+    gap: 3,
+    borderRadius: 3,
+    padding: 4,
     marginTop: 4,
   },
-  anchorTitle: {
-    fontSize: 9,
-    fontWeight: 700,
-    color: C.anchorDk,
-    marginBottom: 5,
+  warningText: {
+    fontSize: 7.5,
+    lineHeight: 1.4,
+    flex: 1,
   },
-  anchorGrid: {
+  sciroccoNote: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+    gap: 3,
+    backgroundColor: C.scirocco,
+    borderRadius: 3,
+    padding: 4,
+    marginTop: 4,
+  },
+  sciroccoNoteText: {
+    fontSize: 7.5,
+    color: C.sciroccoText,
+    lineHeight: 1.4,
+    flex: 1,
+  },
+  // ── Overview / decision table ────────────────────────────
+  overviewHeader: {
+    fontFamily: 'Playfair',
+    fontSize: 18,
+    fontWeight: 700,
+    color: C.seaDeep,
     marginBottom: 4,
   },
-  anchorField: {
-    minWidth: 80,
+  overviewSubtitle: {
+    fontSize: 8.5,
+    color: C.muted,
+    marginBottom: 12,
   },
-  anchorLabel: {
-    fontSize: 6.5,
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: C.seaDeep,
+    borderRadius: 4,
+    paddingVertical: 5,
+    paddingHorizontal: 4,
+    marginBottom: 4,
+  },
+  tableHeaderCell: {
+    fontSize: 7.5,
     fontWeight: 700,
+    color: C.white,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    color: C.muted,
-    marginBottom: 1,
   },
-  anchorValue: {
-    fontSize: 8,
-    fontFamily: 'Courier',
+  tableRow: {
+    flexDirection: 'row',
+    borderBottom: `1px solid ${C.border}`,
+    paddingVertical: 5,
+    paddingHorizontal: 4,
   },
-  anchorNotes: {
+  tableCell: {
     fontSize: 8,
+    lineHeight: 1.4,
     color: C.text,
+  },
+  tableCellPlanA: {
+    backgroundColor: C.planA,
+    borderRadius: 3,
+    padding: 3,
+    fontSize: 7.5,
+    color: C.planAText,
     lineHeight: 1.4,
   },
-  // Footer
+  tableCellPlanB: {
+    backgroundColor: C.planB,
+    borderRadius: 3,
+    padding: 3,
+    fontSize: 7.5,
+    color: C.planBText,
+    lineHeight: 1.4,
+  },
+  tableCellScirocco: {
+    backgroundColor: C.scirocco,
+    borderRadius: 3,
+    padding: 3,
+    fontSize: 7.5,
+    color: C.sciroccoText,
+    lineHeight: 1.4,
+  },
+  tableCellMuted: {
+    fontSize: 7.5,
+    color: C.muted,
+  },
+  // ── Scirocco page ────────────────────────────────────────
+  sciroccoPageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: C.scirocco,
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 12,
+  },
+  sciroccoPageTitle: {
+    fontFamily: 'Playfair',
+    fontSize: 18,
+    fontWeight: 700,
+    color: C.sciroccoText,
+  },
+  sciroccoPageSubtitle: {
+    fontSize: 8,
+    color: C.sciroccoText,
+    marginTop: 2,
+    lineHeight: 1.4,
+  },
+  sciroccoDayCard: {
+    borderLeft: `4px solid ${C.sciroccoBorder}`,
+    backgroundColor: C.scirocco,
+    borderRadius: 4,
+    padding: 8,
+    marginBottom: 8,
+  },
+  sciroccoDayLabel: {
+    fontSize: 6.5,
+    fontWeight: 700,
+    backgroundColor: C.sciroccoBorder,
+    color: C.white,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 3,
+    alignSelf: 'flex-start',
+    marginBottom: 4,
+  },
+  sciroccoDayTitle: {
+    fontSize: 9,
+    fontWeight: 600,
+    color: C.sciroccoText,
+    marginBottom: 3,
+  },
+  // ── Footer ───────────────────────────────────────────────
   footer: {
     position: 'absolute',
     bottom: 15,
@@ -215,42 +367,91 @@ const styles = StyleSheet.create({
 
 // ── Sub-components ───────────────────────────────────────────
 
-function POICard({ poi }: { poi: POI }) {
-  return (
-    <View style={styles.poiCard} wrap={false}>
-      <Text style={styles.poiName}>{poi.name}</Text>
-      <Text style={styles.poiDesc}>{poi.description}</Text>
-      {poi.rating !== undefined && (
-        <Text style={styles.poiRating}>
-          {'★'.repeat(Math.round(poi.rating))} {poi.rating}
-        </Text>
-      )}
-    </View>
-  );
-}
+function PlanCardPDF({ plan, variant }: { plan: Plan; variant: 'a' | 'b' }) {
+  const isA = variant === 'a';
+  const bg     = isA ? C.planA     : C.planB;
+  const border = isA ? C.planABorder : C.planBBorder;
+  const badgeBg = isA ? C.planABorder : C.planBBorder;
+  const badgeColor = isA ? C.white : C.planBText;
+  const triggerColor = isA ? C.planAText : C.planBText;
+  const label  = isA ? 'ПЛАН А' : 'ПЛАН Б';
 
-function AnchoringBlock({ anchoring }: { anchoring: Anchoring }) {
   return (
-    <View style={styles.anchorBox} wrap={false}>
-      <Text style={styles.anchorTitle}>⚓ Anchoring — {anchoring.bay}</Text>
-      <View style={styles.anchorGrid}>
-        <View style={styles.anchorField}>
-          <Text style={styles.anchorLabel}>Coordinates</Text>
-          <Text style={styles.anchorValue}>{anchoring.coordinates}</Text>
-        </View>
-        <View style={styles.anchorField}>
-          <Text style={styles.anchorLabel}>Depth</Text>
-          <Text style={styles.anchorValue}>{anchoring.depth_m} m</Text>
-        </View>
-        {anchoring.shelter && (
-          <View style={[styles.anchorField, { minWidth: 160 }]}>
-            <Text style={styles.anchorLabel}>Shelter</Text>
-            <Text style={styles.anchorValue}>{anchoring.shelter}</Text>
-          </View>
+    <View style={[styles.planCard, { backgroundColor: bg, borderLeft: `4px solid ${border}` }]} wrap={false}>
+      {/* Badge + trigger */}
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 4, marginBottom: 4 }}>
+        <Text style={[styles.planBadge, { backgroundColor: badgeBg, color: badgeColor }]}>
+          {label}
+        </Text>
+        {plan.trigger && (
+          <Text style={[styles.planTrigger, { color: triggerColor, flex: 1 }]}>{plan.trigger}</Text>
         )}
       </View>
-      {anchoring.notes && (
-        <Text style={styles.anchorNotes}>{anchoring.notes}</Text>
+
+      {/* Destinations */}
+      <View style={styles.planDests}>
+        {plan.destinations.map((dest, i) => (
+          <React.Fragment key={i}>
+            <Text style={styles.planDestBadge}>{dest}</Text>
+            {i < plan.destinations.length - 1 && (
+              <Text style={styles.planDestArrow}>→</Text>
+            )}
+          </React.Fragment>
+        ))}
+      </View>
+
+      {/* Mooring */}
+      <View style={styles.mooringBox}>
+        <Text style={styles.mooringName}>⚓ {plan.mooring.name ?? plan.mooring.type}</Text>
+        {plan.mooring.phone && (
+          <Text style={styles.mooringPhone}>{plan.mooring.phone}</Text>
+        )}
+        {plan.mooring.notes && (
+          <Text style={styles.mooringNote}>{plan.mooring.notes}</Text>
+        )}
+        {plan.mooring.booking_urls.length > 0 && (
+          <Text style={[styles.mooringNote, { color: C.sea }]}>
+            {plan.mooring.booking_urls.map((_, i) => (i === 0 ? '📋 Бронирование' : ' · Navily')).join('')}
+          </Text>
+        )}
+      </View>
+
+      {/* Activities */}
+      {plan.activities.map((act, i) => (
+        <Text key={i} style={styles.activityItem}>· {act}</Text>
+      ))}
+
+      {/* Warnings */}
+      {plan.warnings.map((w, i) => (
+        <View
+          key={i}
+          style={[
+            styles.warningBox,
+            {
+              backgroundColor: w.severity === 'critical' ? C.warnCrit : C.warnWarn,
+            },
+          ]}
+        >
+          <Text style={{ fontSize: 8 }}>
+            {w.severity === 'critical' ? '🚨' : '⚠️'}
+          </Text>
+          <Text
+            style={[
+              styles.warningText,
+              { color: w.severity === 'critical' ? C.warnCritText : C.warnWarnText },
+            ]}
+          >
+            {w.text}
+          </Text>
+        </View>
+      ))}
+
+      {/* Scirocco note */}
+      {plan.scirocco_note && (
+        <View style={styles.sciroccoNote}>
+          <Text style={{ fontSize: 8 }}>🌪️</Text>
+          <Text style={styles.sciroccoNoteText}>{plan.scirocco_note}</Text>
+        </View>
       )}
     </View>
   );
@@ -264,60 +465,219 @@ function DayPage({ day, routeTitle }: { day: Day; routeTitle: string }) {
         <View style={styles.dayBadge}>
           <Text style={styles.dayBadgeText}>{day.day}</Text>
         </View>
-        <Text style={styles.dayTitle}>{day.title}</Text>
+        <View>
+          <Text style={styles.dayTitle}>{day.title}</Text>
+          <Text style={styles.dayDate}>{day.date}</Text>
+        </View>
       </View>
 
-      {/* Meta row */}
-      {(day.from ?? day.to ?? day.distance_nm) && (
-        <View style={styles.dayMeta}>
-          {day.from && (
-            <Text style={styles.dayMetaItem}>
-              From: <Text style={styles.dayMetaValue}>{day.from}</Text>
-            </Text>
-          )}
-          {day.to && (
-            <Text style={styles.dayMetaItem}>
-              To: <Text style={styles.dayMetaValue}>{day.to}</Text>
-            </Text>
-          )}
-          {day.distance_nm && (
-            <Text style={styles.dayMetaItem}>
-              ≈ <Text style={styles.dayMetaValue}>{day.distance_nm} nm</Text>
-            </Text>
-          )}
-        </View>
+      {/* Departure */}
+      {day.departure_time && (
+        <Text style={styles.dayMeta}>Выход: {day.departure_time}</Text>
       )}
 
-      {/* Description */}
-      {day.description && (
-        <Text style={styles.description}>{day.description}</Text>
+      {/* Notes */}
+      {day.notes && (
+        <Text style={styles.dayNotes}>{day.notes}</Text>
       )}
 
-      {/* Destinations */}
-      {day.destinations.length > 0 && (
-        <View style={{ marginBottom: 8 }}>
-          <Text style={styles.sectionLabel}>Destinations</Text>
-          {day.destinations.map((dest, i) => (
-            <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
-              <Text style={[styles.destItem, { fontWeight: 600 }]}>{dest.name}</Text>
-              {dest.coordinates && (
-                <Text style={styles.destCoord}> {dest.coordinates}</Text>
-              )}
-              {dest.description && (
-                <Text style={[styles.destItem, { color: C.muted }]}> — {dest.description}</Text>
-              )}
-            </View>
-          ))}
-        </View>
-      )}
+      {/* Plans */}
+      <View style={styles.plansRow}>
+        <PlanCardPDF plan={day.plan_a} variant="a" />
+        {day.plan_b && <PlanCardPDF plan={day.plan_b} variant="b" />}
+      </View>
 
-      {/* POIs */}
-      {day.pois.length > 0 && (
-        <View style={{ marginBottom: 8 }}>
-          <Text style={styles.sectionLabel}>Points of Interest</Text>
-          <View style={styles.poiGrid}>
-            {day.pois.map((poi, i) => <POICard key={i} poi={poi} />)}
+      {/* Footer */}
+      <View style={styles.footer} fixed>
+        <Text style={styles.footerText}>{routeTitle}</Text>
+        <Text
+          style={styles.footerText}
+          render={({ pageNumber, totalPages }) =>
+            `День ${day.day}  ·  ${pageNumber} / ${totalPages}`
+          }
+        />
+      </View>
+    </Page>
+  );
+}
+
+// Decision table rows derived from route data
+type OverviewRow = {
+  day: string;
+  planA: string;
+  planB: string;
+  scirocco: string;
+};
+
+function buildOverviewRows(route: Route): OverviewRow[] {
+  const sciroccoMap: Record<string, string> = {};
+  for (const sd of route.scirocco_branch) {
+    sciroccoMap[sd.day_ref] = `${sd.destination}\n${sd.mooring.name ?? ''}`;
+  }
+
+  return route.days.map((d) => ({
+    day: `День ${d.day}\n${d.title}`,
+    planA: `${d.plan_a.destinations.join(' → ')}\n${d.plan_a.mooring.name ?? d.plan_a.mooring.type}`,
+    planB: d.plan_b
+      ? `${d.plan_b.destinations.join(' → ')}\n${d.plan_b.mooring.name ?? d.plan_b.mooring.type}`
+      : '',
+    scirocco: sciroccoMap[String(d.day)] ?? '',
+  }));
+}
+
+function OverviewPage({ route }: { route: Route }) {
+  const rows = buildOverviewRows(route);
+  const col = { day: 95, planA: 130, planB: 120, scirocco: 130 };
+
+  return (
+    <Page size="A4" style={styles.page} break>
+      <Text style={styles.overviewHeader}>Схема маршрута</Text>
+      <Text style={styles.overviewSubtitle}>
+        Дерево решений — зелёный = нормальная погода · жёлтый = задержка/нет мест · красный = Scirocco
+      </Text>
+
+      {/* Table header */}
+      <View style={styles.tableHeader}>
+        <Text style={[styles.tableHeaderCell, { width: col.day }]}>День</Text>
+        <Text style={[styles.tableHeaderCell, { width: col.planA }]}>План А</Text>
+        <Text style={[styles.tableHeaderCell, { width: col.planB }]}>План Б</Text>
+        <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Scirocco 🌪️</Text>
+      </View>
+
+      {rows.map((row, i) => (
+        <View key={i} style={styles.tableRow}>
+          <Text style={[styles.tableCell, { width: col.day }]}>{row.day}</Text>
+          <View style={{ width: col.planA, paddingRight: 4 }}>
+            <Text style={styles.tableCellPlanA}>{row.planA}</Text>
           </View>
+          <View style={{ width: col.planB, paddingRight: 4 }}>
+            {row.planB
+              ? <Text style={styles.tableCellPlanB}>{row.planB}</Text>
+              : <Text style={styles.tableCellMuted}>—</Text>
+            }
+          </View>
+          <View style={{ flex: 1 }}>
+            {row.scirocco
+              ? <Text style={styles.tableCellScirocco}>{row.scirocco}</Text>
+              : <Text style={styles.tableCellMuted}>—</Text>
+            }
+          </View>
+        </View>
+      ))}
+
+      <View style={styles.footer} fixed>
+        <Text style={styles.footerText}>{route.title}</Text>
+        <Text
+          style={styles.footerText}
+          render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
+        />
+      </View>
+    </Page>
+  );
+}
+
+function SciroccoBranchPage({ branch, routeTitle }: { branch: SciroccoDay[]; routeTitle: string }) {
+  return (
+    <Page size="A4" style={styles.page} break>
+      <View style={styles.sciroccoPageHeader}>
+        <View>
+          <Text style={styles.sciroccoPageTitle}>🌪️ Красная Ветка — Scirocco</Text>
+          <Text style={styles.sciroccoPageSubtitle}>
+            Активируется при устойчивом южном ветре с Дня 3. Побережье Амальфи и юг Искьи опасны.
+          </Text>
+        </View>
+      </View>
+
+      {branch.map((sd, i) => (
+        <View key={i} style={styles.sciroccoDayCard} wrap={false}>
+          <Text style={styles.sciroccoDayLabel}>ДЕНЬ {sd.day_ref}</Text>
+          <Text style={styles.sciroccoDayTitle}>{sd.title}</Text>
+          <Text style={[styles.activityItem, { color: C.sciroccoText }]}>📍 {sd.destination}</Text>
+          <View style={styles.mooringBox}>
+            <Text style={[styles.mooringName, { color: C.sciroccoText }]}>
+              ⚓ {sd.mooring.name ?? sd.mooring.type}
+            </Text>
+            {sd.mooring.notes && (
+              <Text style={styles.mooringNote}>{sd.mooring.notes}</Text>
+            )}
+          </View>
+          {sd.activities.map((act, j) => (
+            <Text key={j} style={[styles.activityItem, { color: C.sciroccoText }]}>· {act}</Text>
+          ))}
+          {sd.merges_to && (
+            <Text style={[styles.activityItem, { color: C.sciroccoBorder, fontStyle: 'italic', marginTop: 4 }]}>
+              ↩ {sd.merges_to}
+            </Text>
+          )}
+        </View>
+      ))}
+
+      <View style={styles.footer} fixed>
+        <Text style={styles.footerText}>{routeTitle}</Text>
+        <Text
+          style={styles.footerText}
+          render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
+        />
+      </View>
+    </Page>
+  );
+}
+
+// ── Root document ────────────────────────────────────────────
+
+export function AmalfiRoutePDF({ route }: { route: Route }) {
+  return (
+    <Document title={route.title} author="Amalfi Route Guide" language="ru">
+      {/* Cover page */}
+      <Page size="A4" style={[styles.page, styles.coverPage]}>
+        <Text style={styles.coverTitle}>{route.title}</Text>
+        {route.subtitle && <Text style={styles.coverSubtitle}>{route.subtitle}</Text>}
+        <View style={styles.coverMetaRow}>
+          <View>
+            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>🚢 Яхта</Text>
+            <Text style={[styles.coverMetaItem, styles.coverMetaValue]}>{route.boat.name}</Text>
+            <Text style={styles.coverMetaItem}>
+              {route.boat.length_m}м × {route.boat.beam_m}м · осадка {route.boat.draft_m}м
+            </Text>
+          </View>
+          <View>
+            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>👥 Экипаж</Text>
+            <Text style={[styles.coverMetaItem, styles.coverMetaValue]}>
+              {route.crew.adults} взрослых + {route.crew.children} детей
+            </Text>
+            {route.crew.children_ages && (
+              <Text style={styles.coverMetaItem}>Возраст: {route.crew.children_ages}</Text>
+            )}
+          </View>
+          <View>
+            <Text style={[styles.coverMetaItem, { marginBottom: 2 }]}>📅 Даты</Text>
+            <Text style={[styles.coverMetaItem, styles.coverMetaValue]}>{route.dates}</Text>
+          </View>
+        </View>
+        {route.rules.length > 0 && (
+          <View style={styles.coverRules}>
+            {route.rules.map((rule, i) => (
+              <Text key={i} style={styles.coverRule}>📌 {rule}</Text>
+            ))}
+          </View>
+        )}
+      </Page>
+
+      {/* Route overview / decision table */}
+      <OverviewPage route={route} />
+
+      {/* One page per day */}
+      {route.days.map((day) => (
+        <DayPage key={day.day} day={day} routeTitle={route.title} />
+      ))}
+
+      {/* Scirocco branch */}
+      {route.scirocco_branch.length > 0 && (
+        <SciroccoBranchPage branch={route.scirocco_branch} routeTitle={route.title} />
+      )}
+    </Document>
+  );
+}
         </View>
       )}
 

@@ -1,8 +1,7 @@
 ---
-import type { POI } from '../schemas/route';
-
+// Legacy component — not used in current design
 interface Props {
-  poi: POI;
+  poi: { name: string; type: string; description: string; rating?: number; link?: string };
 }
 
 const { poi } = Astro.props;

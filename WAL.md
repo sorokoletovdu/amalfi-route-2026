@@ -1,6 +1,6 @@
 # Write-Ahead Log {#root}
 
-Last updated: 2026-05-19 | Session: initial scaffold, git setup, BOOT/WAL/AGENTS
+Last updated: 2026-05-19 | Session: real data, schema v2 (Plan A/B/Scirocco), route diagram
 
 > **SESSION OPEN PROCEDURE**
 >
@@ -12,23 +12,23 @@ Last updated: 2026-05-19 | Session: initial scaffold, git setup, BOOT/WAL/AGENTS
 
 ## Current State {#state}
 
-**Overall status**: scaffold committed and pushed; design not yet chosen; PDF not yet buildable locally
+**Overall status**: schema v2 + real data in place; web builds clean; PDF needs fonts; design is functional
 
 | Area | Status |
 |---|---|
 | Project scaffold | Complete — committed 45915a0 |
 | Astro + Tailwind v4 + TS strict | Complete |
-| Zod schema (`src/schemas/route.ts`) | Complete |
-| Content collection + sample data | Complete — 4-day Amalfi route in `src/content/route/amalfi.md` |
-| Web page components | Skeleton complete — `DaySection`, `POICard`, `AnchoringCard` |
-| PDF generation script | Skeleton complete — needs fonts to run |
+| Zod schema (`src/schemas/route.ts`) | **Complete v2** — Plan A/B + Scirocco branch + Mooring + Warnings |
+| Route data (`src/content/route/amalfi.md`) | **Complete** — full 7-day YAML frontmatter, real Russian content |
+| Web components | **Complete** — `DaySection` + `PlanCard` (A/B) + `SciroccoSection` + `RouteDiagram` |
+| Route decision diagram | **Complete** — Mermaid web component + standalone `public/route-diagram.html` |
+| PDF generation script | **Updated** — new schema; needs fonts to run |
+| PDF layout (`AmalfiRoutePDF.tsx`) | **Complete** — Cover + Overview table + Day pages + Scirocco page |
 | GitHub Actions deploy workflow | Complete — triggers on push to `main` |
 | Git remote | Configured → `https://github.com/sorokoletovdu/amalfi-route-2026.git` |
-| GitHub Pages settings | Configured by author (source = GitHub Actions) |
 | Fonts (`public/fonts/`) | **Missing** — Inter + Playfair Display TTFs required before PDF builds |
-| Design | **Not started** — design direction not yet chosen |
+| Visual polish / final design | **Not started** — functional but unstyled beyond plan colours |
 | Data-fetching script | **Not started** — TripAdvisor + Navily enrichment |
-| Main content | **Not started** — real route data, full days |
 
 ---
 
@@ -37,13 +37,15 @@ Last updated: 2026-05-19 | Session: initial scaffold, git setup, BOOT/WAL/AGENTS
 - [ ] **Fonts**: download Inter + Playfair Display TTFs into `public/fonts/` so `pnpm generate-pdf` works.
   Files needed: `Inter-Regular.ttf`, `Inter-Medium.ttf`, `Inter-SemiBold.ttf`, `Inter-Bold.ttf`,
   `PlayfairDisplay-Regular.ttf`, `PlayfairDisplay-Bold.ttf`
-- [ ] **Design**: discuss and implement visual design (3 options proposed: Nautical Chart / Clean Modern /
-  Travel Magazine — author has not yet chosen)
+- [ ] **Visual polish**: refine typography, spacing, and layout — functional design is in place but
+  needs visual polish pass on `src/pages/index.astro` and components
 - [ ] **Data-fetching script**: `scripts/fetch-enrichments.ts` — scrape/query TripAdvisor + Navily for
-  POI ratings, photos, marina data; write enrichments back into a sidecar JSON
-- [ ] **Main code**: implement full design in `src/pages/index.astro` and components; implement
-  matching PDF layout in `src/pdf/AmalfiRoutePDF.tsx`
-- [ ] **Real route data**: expand `src/content/route/amalfi.md` with the full itinerary (currently 4 days)
+  POI ratings, photos, marina data; enrich `amalfi.md` content
+- [x] **Schema v2**: `src/schemas/route.ts` — Plan A/B, Mooring, Warning, Scirocco branch
+- [x] **Real route data**: `src/content/route/amalfi.md` — full 7-day YAML frontmatter
+- [x] **Route diagram**: `RouteDiagram.astro` (Mermaid) + `public/route-diagram.html` (standalone)
+- [x] **New components**: `PlanCard.astro`, `SciroccoSection.astro`, updated `DaySection.astro`
+- [x] **PDF v2**: `AmalfiRoutePDF.tsx` — Cover + Overview decision table + Day pages + Scirocco page
 
 ---
 
@@ -74,11 +76,16 @@ No open REVIEW items.
 
 ## Next Session Must Read {#next}
 
-Design not yet chosen. Three options were presented to the author (Nautical Chart, Clean Modern,
-Travel Magazine). Start by asking for the design choice, then implement it in:
-- `src/styles/global.css` — update `@theme` tokens
-- `src/pages/index.astro` — full layout
-- `src/components/DaySection.astro`, `POICard.astro`, `AnchoringCard.astro`
-- `src/pdf/AmalfiRoutePDF.tsx` — matching PDF layout
+Schema v2 is live and web builds clean. All real content is in `src/content/route/amalfi.md`.
 
-Font issue must be resolved before `pnpm generate-pdf` or `pnpm build` can succeed end-to-end.
+Next priorities:
+1. **Fonts** — add TTFs to `public/fonts/` then run `pnpm generate-pdf` to test the full PDF
+2. **Visual polish** — the functional layout is in place; review it in browser (`pnpm dev`) and
+   refine typography, colours, and spacing in `src/styles/global.css` and components
+3. **Commit** — nothing has been committed since schema/data change; run `git add -A && git commit`
+
+Key new files this session:
+- `src/components/PlanCard.astro`
+- `src/components/RouteDiagram.astro`
+- `src/components/SciroccoSection.astro`
+- `public/route-diagram.html` (moved from `src/content/route/`)
